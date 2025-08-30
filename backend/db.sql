@@ -1,46 +1,84 @@
-CREATE OR REPLACE TABLE `usuarios` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`apelido` VARCHAR(16) NOT NULL,
-	`hash_senha` TEXT(1024) NOT NULL,
-	`link_avatar` TEXT(1024) NOT NULL,
-	PRIMARY KEY(`id`)
-);
+-- --------------------------------------------------------
+-- Servidor:                     127.0.0.1
+-- Versão do servidor:           11.8.3-MariaDB-1+b1 from Debian - -- Please help get to 10k stars at https://github.com/MariaDB/Server
+-- OS do Servidor:               debian-linux-gnu
+-- HeidiSQL Versão:              12.11.0.7065
+-- --------------------------------------------------------
 
-CREATE OR REPLACE TABLE `posts` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`autor_id` INTEGER NOT NULL,
-	`titulo` VARCHAR(32) NOT NULL,
-	`conteudo` TEXT(65535) NOT NULL,
-	`timestamp` TIMESTAMP NOT NULL,
-	PRIMARY KEY(`id`)
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE OR REPLACE TABLE `comentarios` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`autor_id` INTEGER NOT NULL,
-	`post_id` INTEGER NOT NULL,
-	`conteudo` TEXT(65535) NOT NULL,
-	`timestamp` TIMESTAMP NOT NULL,
-	PRIMARY KEY(`id`)
-);
 
-CREATE OR REPLACE TABLE `mensagens` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`autor_id` INTEGER NOT NULL,
-	`mensagem` TEXT(65535) NOT NULL,
-	`timestamp` TIMESTAMP NOT NULL,
-	PRIMARY KEY(`id`)
-);
+-- Copiando estrutura do banco de dados para oldschool
+CREATE DATABASE IF NOT EXISTS `oldschool` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci */;
+USE `oldschool`;
 
-ALTER TABLE `posts`
-ADD FOREIGN KEY(`autor_id`) REFERENCES `usuarios`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `usuarios`
-ADD FOREIGN KEY(`id`) REFERENCES `comentarios`(`autor_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `posts`
-ADD FOREIGN KEY(`id`) REFERENCES `comentarios`(`post_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `usuarios`
-ADD FOREIGN KEY(`id`) REFERENCES `mensagens`(`autor_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+-- Copiando estrutura para tabela oldschool.comentarios
+CREATE TABLE IF NOT EXISTS `comentarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `autor_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `conteudo` mediumtext NOT NULL,
+  `timestamp` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `autor_id_cm_FK1` (`autor_id`),
+  KEY `post_id_com_FK2` (`post_id`),
+  CONSTRAINT `autor_id_cm_FK1` FOREIGN KEY (`autor_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `post_id_com_FK2` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Exportação de dados foi desmarcado.
+
+-- Copiando estrutura para tabela oldschool.mensagens
+CREATE TABLE IF NOT EXISTS `mensagens` (
+  `id` int(11) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `autor_id` int(11) NOT NULL,
+  `mensagem` mediumtext NOT NULL,
+  `timestamp` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `autor_id_msg_FK1` (`autor_id`),
+  CONSTRAINT `autor_id_msg_FK1` FOREIGN KEY (`autor_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Exportação de dados foi desmarcado.
+
+-- Copiando estrutura para tabela oldschool.posts
+CREATE TABLE IF NOT EXISTS `posts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `autor_id` int(11) NOT NULL,
+  `titulo` varchar(32) NOT NULL,
+  `conteudo` mediumtext NOT NULL,
+  `timestamp` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `autor_id` (`autor_id`),
+  CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`autor_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Exportação de dados foi desmarcado.
+
+-- Copiando estrutura para tabela oldschool.usuarios
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `apelido` varchar(16) NOT NULL,
+  `hash_senha` text NOT NULL,
+  `link_avatar` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Exportação de dados foi desmarcado.
+
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
