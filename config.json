@@ -1,5 +1,10 @@
 {
     "app" : {
-        "url": "http://localhost:8000"
+        "url": "http://localhost:9090"
+    },
+    "database": {
+        "name": "oldschool",
+        "host": "127.0.0.1",
+        "port": 5432
     }
 }

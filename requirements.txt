@@ -1,2 +1,2 @@
 fastapi[standard]
-mariadb
+psycopg2-binary
