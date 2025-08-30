@@ -7,6 +7,10 @@ REGEXES = {
     "username": "^([A-Z]|[a-z]|[0-9]|-|_){1,}$"
 }
 
+ERROR_CODES = {
+    "TOO_LONG": 1
+}
+
 def validate(data, type):
     if type == "url":
         return re.match(REGEXES["url"], data)
@@ -28,12 +32,26 @@ def get_connection(db_config: dict, postgree_user: str, postgree_password: str):
     )
 
 
-def query(connection: psycopg2.extensions.connection, query: str, query_params: tuple):
+def query(connection: psycopg2.extensions.connection, query: str, query_params: tuple) -> tuple | None | bool | int:
     cursor = connection.cursor()
-    cursor.execute(query, query_params)
-    connection.commit()
+    try:
+        cursor.execute(query, query_params)
+        connection.commit()
 
-    last_row_added = cursor.fetchone()
-    cursor.close()
+        last_row_added = cursor.fetchone()
+        cursor.close()
+    except (psycopg2.errors.UniqueViolation):
+        return False
+    except (psycopg2.errors.StringDataRightTruncation):
+        return ERROR_CODES["TOO_LONG"]
 
     return last_row_added
+
+
+def authenticate(connection: psycopg2.extensions.connection, username: str, password: str):
+    result = query(connection, "SELECT * FROM usuarios WHERE apelido = %s AND hash_senha = %s;", (username, generate_hash(password)))
+
+    if result is not None:
+        return True
+    else:
+        return False
