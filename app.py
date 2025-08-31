@@ -39,6 +39,14 @@ class Publish(pydantic.BaseModel):
     conteudo: str
 
 
+class Comment(pydantic.BaseModel):
+    autor_id: int
+    autor_apelido: str
+    senha: str
+    post_id: int
+    conteudo: str
+
+
 @app.get("/")
 async def root():
     if database:
@@ -59,8 +67,7 @@ async def create_user(user: UserCreate):
     result = utils.query(database, query, (user.apelido, str(user.link_avatar), password_hash))
 
     if result:
-        return {"status": "OK",
-                "user_id": result[0]}
+        return {"user_id": result[0]}
     elif result is None:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     elif result is False:
@@ -79,8 +86,27 @@ async def publish(info: Publish):
 
     if result:
         if isinstance(result, tuple):
-            return {"status": "OK",
-                    "post_id": result[0]}
+            return {"post_id": result[0]}
+        elif isinstance(result, int):
+            if utils.ERROR_CODES["TOO_LONG"] == result:
+                raise fastapi.HTTPException(status_code=400, detail="Conteudo muito longo")
+    else:
+        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+
+@app.post("/comentarios")
+async def comment(info: Comment):
+    authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
+
+    if not authenticated:
+        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+    
+    query = "INSERT INTO comentarios (autor_id, post_id, conteudo, timestamp) VALUES (%s, %s, %s, NOW()) RETURNING id;"
+    result = utils.query(database, query, (info.autor_id, info.post_id, info.conteudo))
+
+    if result:
+        if isinstance(result, tuple):
+            return {"comment_id": result[0]}
         elif isinstance(result, int):
             if utils.ERROR_CODES["TOO_LONG"] == result:
                 raise fastapi.HTTPException(status_code=400, detail="Conteudo muito longo")
