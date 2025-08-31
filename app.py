@@ -47,6 +47,12 @@ class Comment(pydantic.BaseModel):
     conteudo: str
 
 
+class SendMessage(pydantic.BaseModel):
+    autor_id: int
+    autor_apelido: str
+    senha: str
+    mensagem: str
+
 @app.get("/")
 async def root():
     if database:
@@ -105,10 +111,25 @@ async def comment(info: Comment):
     result = utils.query(database, query, (info.autor_id, info.post_id, info.conteudo))
 
     if result:
+        return {"comment_id": result[0]}
+    else:
+        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+
+@app.post("/mensagens")
+async def send_message(info: SendMessage):
+    authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
+
+    if not authenticated:
+        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+    
+    query = "INSERT INTO mensagens (autor_id, mensagem, timestamp) VALUES (%s, %s, NOW()) RETURNING id;"
+    result = utils.query(database, query, (info.autor_id, info.mensagem))
+
+    if result:
         if isinstance(result, tuple):
-            return {"comment_id": result[0]}
-        elif isinstance(result, int):
-            if utils.ERROR_CODES["TOO_LONG"] == result:
-                raise fastapi.HTTPException(status_code=400, detail="Conteudo muito longo")
+            return {"message_id": result[0]}
+        else:
+            raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     else:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
