@@ -2,8 +2,7 @@ import json
 import fastapi
 import os
 import utils
-import pydantic
-import psycopg2
+import classes
 
 postgree_user = os.getenv("P_USER")
 postgree_password = os.getenv("P_PASSWORD")
@@ -13,7 +12,6 @@ if not postgree_user or not postgree_password:
     raise Exception("P_USER e P_PASSWORD precisa ser definido no ambiente.")
 
 config = json.load(open("config.json"))
-app_config = config["app"]
 db_config = config["database"]
 database = utils.get_connection(db_config, postgree_user, postgree_password)
 
@@ -21,37 +19,9 @@ if not database:
     raise Exception("Database connection error")
 
 app = fastapi.FastAPI(
-    title="OldSchool",
-    servers=[{"url": f"{app_config['url']}"}]
+    title="OldSchool"
 )
 
-class UserCreate(pydantic.BaseModel):
-    apelido: str
-    link_avatar: pydantic.HttpUrl
-    senha: str
-
-
-class Publish(pydantic.BaseModel):
-    autor_id: int
-    autor_apelido: str
-    senha: str
-    titulo: str
-    conteudo: str
-
-
-class Comment(pydantic.BaseModel):
-    autor_id: int
-    autor_apelido: str
-    senha: str
-    post_id: int
-    conteudo: str
-
-
-class SendMessage(pydantic.BaseModel):
-    autor_id: int
-    autor_apelido: str
-    senha: str
-    mensagem: str
 
 @app.get("/")
 async def root():
@@ -62,7 +32,7 @@ async def root():
 
 
 @app.post("/usuarios")
-async def create_user(user: UserCreate):
+async def create_user(user: classes.UserCreate):
     # Sanitização
     if not utils.validate(user.apelido, "username"):
             raise fastapi.HTTPException(status_code=400, detail="Formato invalido de usuário.")
@@ -81,7 +51,7 @@ async def create_user(user: UserCreate):
     
 
 @app.post("/posts")
-async def publish(info: Publish):
+async def publish(info: classes.Publish):
     authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
 
     if not authenticated:
@@ -101,7 +71,7 @@ async def publish(info: Publish):
     
 
 @app.post("/comentarios")
-async def comment(info: Comment):
+async def comment(info: classes.Comment):
     authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
 
     if not authenticated:
@@ -117,7 +87,7 @@ async def comment(info: Comment):
     
 
 @app.post("/mensagens")
-async def send_message(info: SendMessage):
+async def send_message(info: classes.SendMessage):
     authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
 
     if not authenticated:
