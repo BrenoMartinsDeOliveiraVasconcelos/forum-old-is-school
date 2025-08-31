@@ -19,13 +19,13 @@ CREATE TABLE IF NOT EXISTS "comentarios" (
 	"autor_id" INTEGER NOT NULL,
 	"post_id" INTEGER NOT NULL,
 	"conteudo" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL,
+	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
 	PRIMARY KEY ("id"),
 	CONSTRAINT "comentarios_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT "comentarios_post_id_fk" FOREIGN KEY ("post_id") REFERENCES "posts" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 )
-CREATE INDEX "idx_comentarios_autor_id" ON "" ("autor_id");
-CREATE INDEX "idx_comentarios_post_id" ON "" ("post_id");;
+CREATE INDEX "idx_comentarios_post_id" ON "" ("post_id");
+CREATE INDEX "idx_comentarios_autor_id" ON "" ("autor_id");;
 
 -- Exportação de dados foi desmarcado.
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS "mensagens" (
 	"id" SERIAL NOT NULL,
 	"autor_id" INTEGER NOT NULL,
 	"mensagem" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL,
+	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
 	PRIMARY KEY ("id"),
 	CONSTRAINT "mensagens_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 )
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS "posts" (
 	"autor_id" INTEGER NOT NULL,
 	"titulo" VARCHAR(32) NOT NULL,
 	"conteudo" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL,
+	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
 	PRIMARY KEY ("id"),
 	CONSTRAINT "posts_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 )
