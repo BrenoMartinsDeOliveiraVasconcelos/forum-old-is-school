@@ -142,3 +142,19 @@ async def get_messages():
 
     return mensagens
 
+
+@app.get("/comentarios")
+async def get_comments():
+    comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios")
+    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts")
+    usuarios = utils.select_all(database, ["id", "apelido", "link_avatar"], "usuarios")
+
+    for comentario in comentarios["comentarios"]:
+        for post in posts["posts"]:
+            if comentario["post_id"] == post["id"]:
+                comentario["titulo"] = post["titulo"]
+        for user in usuarios["usuarios"]:
+            if comentario["autor_id"] == user["id"]:
+                comentario["autor"] = user["apelido"]
+
+    return comentarios
