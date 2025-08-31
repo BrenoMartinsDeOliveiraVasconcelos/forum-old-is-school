@@ -69,3 +69,21 @@ def authenticate(connection: psycopg2.extensions.connection, username: str, pass
         return True
     else:
         return False
+
+
+def check_existence(connection: psycopg2.extensions.connection, value: str, table_to_check: str, column_to_check: str):
+    result = query(connection, f"SELECT * FROM {table_to_check} WHERE {column_to_check} = %s;", (value,))
+
+    if result is not None:
+        return True
+    else:
+        return False
+
+
+def get_user_id(connection: psycopg2.extensions.connection, username: str):
+    result = query(connection, "SELECT id FROM usuarios WHERE apelido = %s;", (username,))
+
+    if result is not None:
+        return result[0]
+    else:
+        return False

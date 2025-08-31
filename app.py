@@ -53,12 +53,16 @@ async def create_user(user: classes.UserCreate):
 @app.post("/posts")
 async def publish(info: classes.Publish):
     authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
+    autor_id = utils.get_user_id(database, info.autor_apelido)
 
-    if not authenticated:
+    if not authenticated or not autor_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
-    
+
+    if not utils.check_existence(database, autor_id, "usuarios", "id"):
+        raise fastapi.HTTPException(status_code=404, detail="Usuário nao encontrado")
+
     query = f"INSERT INTO posts (autor_id, titulo, conteudo, timestamp) VALUES (%s, %s, %s, NOW()) RETURNING id;"
-    result = utils.query(database, query, (info.autor_id, info.titulo, info.conteudo))
+    result = utils.query(database, query, (autor_id, info.titulo, info.conteudo))
 
     if result:
         if isinstance(result, tuple):
@@ -73,12 +77,13 @@ async def publish(info: classes.Publish):
 @app.post("/comentarios")
 async def comment(info: classes.Comment):
     authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
+    autor_id = utils.get_user_id(database, info.autor_apelido)
 
-    if not authenticated:
+    if not authenticated or not autor_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
     
     query = "INSERT INTO comentarios (autor_id, post_id, conteudo, timestamp) VALUES (%s, %s, %s, NOW()) RETURNING id;"
-    result = utils.query(database, query, (info.autor_id, info.post_id, info.conteudo))
+    result = utils.query(database, query, (autor_id, info.post_id, info.conteudo))
 
     if result:
         return {"comment_id": result[0]}
@@ -89,12 +94,13 @@ async def comment(info: classes.Comment):
 @app.post("/mensagens")
 async def send_message(info: classes.SendMessage):
     authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
+    autor_id = utils.get_user_id(database, info.autor_apelido)
 
-    if not authenticated:
+    if not authenticated or not autor_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
     
     query = "INSERT INTO mensagens (autor_id, mensagem, timestamp) VALUES (%s, %s, NOW()) RETURNING id;"
-    result = utils.query(database, query, (info.autor_id, info.mensagem))
+    result = utils.query(database, query, (autor_id, info.mensagem))
 
     if result:
         if isinstance(result, tuple):

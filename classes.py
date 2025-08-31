@@ -7,7 +7,6 @@ class UserCreate(pydantic.BaseModel):
 
 
 class Publish(pydantic.BaseModel):
-    autor_id: int
     autor_apelido: str
     senha: str
     titulo: str
@@ -15,7 +14,6 @@ class Publish(pydantic.BaseModel):
 
 
 class Comment(pydantic.BaseModel):
-    autor_id: int
     autor_apelido: str
     senha: str
     post_id: int
@@ -23,8 +21,7 @@ class Comment(pydantic.BaseModel):
 
 
 class SendMessage(pydantic.BaseModel):
-    autor_id: int
     autor_apelido: str
     senha: str
     mensagem: str
-    
+
