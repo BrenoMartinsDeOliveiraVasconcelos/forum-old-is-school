@@ -3,6 +3,9 @@ import fastapi
 import os
 import utils
 import classes
+import auth
+from fastapi.security import OAuth2PasswordRequestForm
+from datetime import timedelta
 
 postgree_user = os.getenv("P_USER")
 postgree_password = os.getenv("P_PASSWORD")
@@ -31,6 +34,23 @@ async def root():
         raise fastapi.HTTPException(status_code=500, detail="Database connection error")
 
 
+@app.post("/token", tags=["Authentication"])
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = fastapi.Depends()):
+    authenticated = utils.authenticate(database, form_data.username, form_data.password)
+    if not authenticated:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    access_token = auth.create_access_token(
+        data={"sub": form_data.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 @app.post("/usuarios")
 async def create_user(user: classes.UserCreate):
     # Sanitização
@@ -50,11 +70,10 @@ async def create_user(user: classes.UserCreate):
     
 
 @app.post("/posts")
-async def publish(info: classes.Publish):
-    authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
-    autor_id = utils.get_user_id(database, info.autor_apelido)
+async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    autor_id = utils.get_user_id(database, current_user_apelido)
 
-    if not authenticated or not autor_id:
+    if not autor_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
     
     result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo"], [autor_id, info.titulo, info.conteudo], "id")
@@ -70,11 +89,10 @@ async def publish(info: classes.Publish):
     
 
 @app.post("/comentarios")
-async def comment(info: classes.Comment):
-    authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
-    autor_id = utils.get_user_id(database, info.autor_apelido)
+async def comment(info: classes.Comment, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    autor_id = utils.get_user_id(database, current_user_apelido)
 
-    if not authenticated or not autor_id:
+    if not autor_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
     
     if not utils.check_existence(database, "posts", "id", info.post_id):
@@ -89,11 +107,10 @@ async def comment(info: classes.Comment):
     
 
 @app.post("/mensagens")
-async def send_message(info: classes.SendMessage):
-    authenticated = utils.authenticate(database, info.autor_apelido, info.senha)
-    autor_id = utils.get_user_id(database, info.autor_apelido)
+async def send_message(info: classes.SendMessage, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    autor_id = utils.get_user_id(database, current_user_apelido)
 
-    if not authenticated or not autor_id:
+    if not autor_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
     
     #query = "INSERT INTO mensagens (autor_id, mensagem, timestamp) VALUES (%s, %s, NOW()) RETURNING id;"
