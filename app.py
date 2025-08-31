@@ -120,17 +120,17 @@ async def get_users():
 @app.get("/posts")
 async def get_posts():
     posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts")
-    comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios")
-    usuarios = utils.select_all(database, ["id", "apelido", "link_avatar"], "usuarios")
 
     for post in posts["posts"]:
         post["comentarios"] = []
-        for comentario in comentarios["comentarios"]:
-            if post["id"] == comentario["post_id"]:
-                post["comentarios"].append(comentario)
-        for user in usuarios["usuarios"]:
-            if post["autor_id"] == user["id"]:
-                post["autor"] = user["apelido"]
+        post["autor"] = utils.select_where(database, post["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+        comentarios = utils.select_where(database, post["id"], "post_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+        
+        if comentarios:
+            for comentario in comentarios["comentarios"]:
+                if post["id"] == comentario["post_id"]:
+                    comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+                    post["comentarios"].append(comentario)
 
     return posts
 
@@ -138,36 +138,80 @@ async def get_posts():
 @app.get("/mensagens")
 async def get_messages():
     mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens")
-    usuarios = utils.select_all(database, ["id", "apelido", "link_avatar"], "usuarios")
-
+    
     for mensagem in mensagens["mensagens"]:
-        for user in usuarios["usuarios"]:
-            if mensagem["autor_id"] == user["id"]:
-                mensagem["autor"] = user["apelido"]
-
+        mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
     return mensagens
+
 
 
 @app.get("/comentarios")
 async def get_comments():
     comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios")
-    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts")
-    usuarios = utils.select_all(database, ["id", "apelido", "link_avatar"], "usuarios")
 
     for comentario in comentarios["comentarios"]:
-        for post in posts["posts"]:
-            if comentario["post_id"] == post["id"]:
-                comentario["titulo"] = post["titulo"]
-        for user in usuarios["usuarios"]:
-            if comentario["autor_id"] == user["id"]:
-                comentario["autor"] = user["apelido"]
+        comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
+        comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+    return comentarios
+
+# Posts por id
+@app.get("/posts/{post_id}")
+async def get_post(post_id: int):
+    posts = utils.select_where(database, post_id, "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+    
+    if not posts:
+        raise fastapi.HTTPException(status_code=404, detail="Post nao encontrado")
+    
+    for post in posts["posts"]:
+        post["comentarios"] = []
+        comentarios = utils.select_where(database, post["id"], "post_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+        
+        if comentarios:
+            for comentario in comentarios["comentarios"]:
+                if post["id"] == comentario["post_id"]:
+                    comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+                    post["comentarios"].append(comentario)
+
+    return posts
+
+
+# Tudo relacionado ao usuário
+@app.get("/usuarios/{user_id}")
+async def get_user_content(user_id: int):
+    users = utils.select_where(database, user_id, "id", "usuarios", ["id", "apelido", "link_avatar"])
+    
+    if not users:
+        raise fastapi.HTTPException(status_code=404, detail="Usuário nao encontrado")
+
+    for user in users["usuarios"]:
+        user["posts"] = utils.select_where(database, user_id, "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+        user["mensagens"] = utils.select_where(database, user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+        user["comentarios"] = utils.select_where(database, user_id, "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+    return users
+
+
+@app.get("/comentarios/{comentario_id}")
+async def get_comment(comentario_id: int):
+    comentarios = utils.select_where(database, comentario_id, "id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+    
+    if not comentarios:
+        raise fastapi.HTTPException(status_code=404, detail="Comentario nao encontrado")
+    
+    for comentario in comentarios["comentarios"]:
+        comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
+        comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
 
     return comentarios
 
 
-# GETS com argumentos
+@app.get("/mensagens/{mensagem_id}")
+async def get_msg(mensagem_id: int):
+    mensagens = utils.select_where(database, mensagem_id, "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+    
+    if not mensagens:
+        raise fastapi.HTTPException(status_code=404, detail="Mensagem nao encontrada")
+    
+    for mensagem in mensagens["mensagens"]:
+        mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
 
-@app.get("/posts/{post_id}")
-async def get_post(post_id: int):
-    posts = utils.select_where(database, post_id, "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
-    return posts 
+    return mensagens
