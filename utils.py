@@ -1,6 +1,8 @@
 import hashlib
 import re
 import psycopg2
+from psycopg2 import sql
+import traceback
 
 REGEXES = {
     "url": "https?:\/\/(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*",
@@ -32,18 +34,20 @@ def get_connection(db_config: dict, postgree_user: str, postgree_password: str):
     )
 
 
+def authenticate(connection: psycopg2.extensions.connection, username: str, password: str):
+    result = query(connection, "SELECT * FROM usuarios WHERE apelido = %s AND hash_senha = %s;", (username, generate_hash(password)))
+
+    if result is not None:
+        return True
+    else:
+        return False
+    
+
 def query(connection: psycopg2.extensions.connection, query: str, query_params: tuple) -> tuple | None | bool | int:
     cursor = connection.cursor()
-    try:
-        cursor.execute(query, query_params)
-        connection.commit()
+    cursor.execute(query, query_params)
 
-        last_row_added = cursor.fetchone()
-        cursor.close()
-    except (psycopg2.errors.UniqueViolation):
-        return False
-    except (psycopg2.errors.StringDataRightTruncation):
-        return ERROR_CODES["TOO_LONG"]
+    last_row_added = cursor.fetchone()
 
     return last_row_added
 
@@ -59,31 +63,70 @@ def select_all(connection: psycopg2.extensions.connection, columnns: list, table
         result[f"{table}"].append(dict(zip(columnns, row)))
 
     return result
-    
 
-
-def authenticate(connection: psycopg2.extensions.connection, username: str, password: str):
-    result = query(connection, "SELECT * FROM usuarios WHERE apelido = %s AND hash_senha = %s;", (username, generate_hash(password)))
-
-    if result is not None:
-        return True
-    else:
-        return False
-
-
-def check_existence(connection: psycopg2.extensions.connection, value: str, table_to_check: str, column_to_check: str):
-    result = query(connection, f"SELECT * FROM {table_to_check} WHERE {column_to_check} = %s;", (value,))
-
-    if result is not None:
-        return True
-    else:
-        return False
 
 
 def get_user_id(connection: psycopg2.extensions.connection, username: str):
-    result = query(connection, "SELECT id FROM usuarios WHERE apelido = %s;", (username,))
+    result = select_where(connection, username, "apelido", "usuarios", ["id"])
 
     if result is not None:
-        return result[0]
+        return result["usuarios"][0]["id"]
     else:
         return False
+    
+
+def select_where(connection: psycopg2.extensions.connection, value: str, comun_fetch: str, table_fetch: str, return_columns: list) -> dict:
+    cursor = connection.cursor()
+    
+    query_sql = sql.SQL("SELECT {columns} FROM {table} WHERE {condition_column} = %s").format(
+        columns=sql.SQL(', ').join(map(sql.Identifier, return_columns)),
+        table=sql.Identifier(table_fetch),
+        condition_column=sql.Identifier(comun_fetch)
+    )
+
+    cursor.execute(query_sql, (value,))
+    rows = cursor.fetchall()
+
+    result = {f"{table_fetch}": []}
+
+    if not rows:
+        return {}
+    for row in rows:
+        result[f"{table_fetch}"].append(dict(zip(return_columns, row)))
+
+    return result
+
+
+def insert_into(connection: psycopg2.extensions.connection, table: str, columns: list, values: list, returning: str):
+    cursor = connection.cursor()
+
+    query_sql = sql.SQL("INSERT INTO {table} ({columns}) VALUES ({values}) RETURNING {returning};").format(
+        table=sql.Identifier(table), 
+        columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
+        values=sql.SQL(', ').join(map(sql.Literal, values)),
+        returning=sql.Identifier(returning))
+
+    try:
+        cursor.execute(query_sql)
+        connection.commit()
+        result = cursor.fetchone()
+
+        return result
+    except (psycopg2.errors.UniqueViolation):
+        item_return = False
+    except (psycopg2.errors.StringDataRightTruncation):
+        item_return = ERROR_CODES["TOO_LONG"]
+
+    connection.rollback()
+
+    return item_return
+
+
+def check_existence(connection: psycopg2.extensions.connection, table: str, column: str, value: str):
+    result = select_where(connection, value, column, table, ["id"])
+
+    if not result:
+        return False
+    else:
+        return True
+
