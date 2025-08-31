@@ -215,3 +215,20 @@ async def get_msg(mensagem_id: int):
         mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
 
     return mensagens
+
+
+# Conseguir do usuário cada coisa
+
+@app.get("/usuarios/{user_id}/posts")
+async def get_user_posts(user_id: int):
+    return utils.select_where(database, user_id, "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+
+
+@app.get("/usuarios/{user_id}/comentarios")
+async def get_user_comments(user_id: int):
+    return utils.select_where(database, user_id, "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+
+
+@app.get("/usuarios/{user_id}/mensagens")
+async def get_user_messages(user_id: int):
+    return utils.select_where(database, user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
