@@ -103,3 +103,42 @@ async def send_message(info: classes.SendMessage):
             raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     else:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+
+# Métodos GET que pegam todos de cada categoria
+
+@app.get("/usuarios")
+async def get_users():
+    return utils.select_all(database, ["id", "apelido", "link_avatar"], "usuarios")
+
+
+@app.get("/posts")
+async def get_posts():
+    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts")
+    comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios")
+    usuarios = utils.select_all(database, ["id", "apelido", "link_avatar"], "usuarios")
+
+    for post in posts["posts"]:
+        post["comentarios"] = []
+        for comentario in comentarios["comentarios"]:
+            if post["id"] == comentario["post_id"]:
+                post["comentarios"].append(comentario)
+        for user in usuarios["usuarios"]:
+            if post["autor_id"] == user["id"]:
+                post["autor"] = user["apelido"]
+
+    return posts
+
+    
+@app.get("/mensagens")
+async def get_messages():
+    mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens")
+    usuarios = utils.select_all(database, ["id", "apelido", "link_avatar"], "usuarios")
+
+    for mensagem in mensagens["mensagens"]:
+        for user in usuarios["usuarios"]:
+            if mensagem["autor_id"] == user["id"]:
+                mensagem["autor"] = user["apelido"]
+
+    return mensagens
+

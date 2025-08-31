@@ -27,3 +27,4 @@ class SendMessage(pydantic.BaseModel):
     autor_apelido: str
     senha: str
     mensagem: str
+    

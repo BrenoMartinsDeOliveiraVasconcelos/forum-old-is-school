@@ -48,6 +48,20 @@ def query(connection: psycopg2.extensions.connection, query: str, query_params: 
     return last_row_added
 
 
+def select_all(connection: psycopg2.extensions.connection, columnns: list, table: str) -> dict:
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT {', '.join(columnns)} FROM {table};")
+    rows = cursor.fetchall()
+
+    result = {f"{table}": []}
+
+    for row in rows:
+        result[f"{table}"].append(dict(zip(columnns, row)))
+
+    return result
+    
+
+
 def authenticate(connection: psycopg2.extensions.connection, username: str, password: str):
     result = query(connection, "SELECT * FROM usuarios WHERE apelido = %s AND hash_senha = %s;", (username, generate_hash(password)))
 
