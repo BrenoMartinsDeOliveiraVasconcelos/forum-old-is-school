@@ -282,3 +282,28 @@ async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = f
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     
     return {"status": "OK"}
+
+
+# Deleção de coisas
+@app.post("/usuarios/{user_id}/deletar")
+async def delete_user(user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    logged_id = utils.get_user_id(database, current_user_apelido)
+
+    if logged_id != user_id:
+        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+
+    proccess = [utils.update_data(database, "usuarios", "apelido", "id", str(user_id), str(user_id)),
+                utils.update_data(database, "usuarios", "hash_senha", "id", str(user_id), str(user_id)),
+                utils.update_data(database, "usuarios", "link_avatar", "id", str(user_id), str(user_id)),
+                utils.update_data(database, "usuarios", "biografia", "id", str(user_id), str(user_id)),]
+
+    delete = True
+    for p in proccess:
+        if not p:
+            delete = False
+            break
+
+    if not delete:
+        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+    return {"status": "Bye :("}
