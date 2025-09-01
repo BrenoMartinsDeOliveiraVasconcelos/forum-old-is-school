@@ -249,3 +249,20 @@ async def get_user_comments(user_id: int):
 @app.get("/usuarios/{user_id}/mensagens")
 async def get_user_messages(user_id: int):
     return utils.select_where(database, user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+
+
+# Edição de perfil e afins
+
+@app.post("/usuarios/{user_id}/editar/avatar")
+async def edit_avatar(link_avatar: classes.Avatar, user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    logged_id = utils.get_user_id(database, current_user_apelido)
+
+    if logged_id != user_id:
+        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+
+    update = utils.update_data(database, "usuarios", "link_avatar", "id", user_id, str(link_avatar.link_avatar))    
+
+    if not update:
+        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+    return {"status": "OK"}

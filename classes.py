@@ -19,3 +19,7 @@ class Comment(pydantic.BaseModel):
 class SendMessage(pydantic.BaseModel):
     mensagem: str
 
+
+class Avatar(pydantic.BaseModel):
+    link_avatar: pydantic.HttpUrl
+
