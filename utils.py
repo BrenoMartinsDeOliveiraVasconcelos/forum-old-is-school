@@ -5,7 +5,7 @@ from psycopg2 import sql
 import traceback
 
 REGEXES = {
-    "url": "https?:\/\/(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*",
+    "url": "https?:\\/\\/(?:www\\.)?([-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\b)*(\\/[\\/\\d\\w\\.-]*)*(?:[\\?])*(.+)*",
     "username": "^([A-Z]|[a-z]|[0-9]|-|_){1,}$"
 }
 
@@ -30,7 +30,8 @@ def get_connection(db_config: dict, postgree_user: str, postgree_password: str):
         port=db_config["port"],
         database=db_config["name"],
         user=postgree_user,
-        password=postgree_password
+        password=postgree_password,
+        client_encoding='utf-8'
     )
 
 

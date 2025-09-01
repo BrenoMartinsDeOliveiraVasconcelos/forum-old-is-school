@@ -9,12 +9,11 @@ from datetime import timedelta
 
 postgree_user = os.getenv("P_USER")
 postgree_password = os.getenv("P_PASSWORD")
-arg_char = "?"
 
 if not postgree_user or not postgree_password:
     raise Exception("P_USER e P_PASSWORD precisa ser definido no ambiente.")
 
-config = json.load(open("config.json"))
+config = json.load(open("config.json", encoding='utf-8'))
 db_config = config["database"]
 database = utils.get_connection(db_config, postgree_user, postgree_password)
 
@@ -43,7 +42,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = fastapi.
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES_INT) 
 
     access_token = auth.create_access_token(
         data={"sub": form_data.username}, expires_delta=access_token_expires
