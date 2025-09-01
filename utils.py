@@ -3,6 +3,7 @@ import re
 import psycopg2
 from psycopg2 import sql
 import traceback
+import fastapi
 
 REGEXES = {
     "url": "https?:\\/\\/(?:www\\.)?([-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\b)*(\\/[\\/\\d\\w\\.-]*)*(?:[\\?])*(.+)*",
@@ -55,12 +56,16 @@ def query(connection: psycopg2.extensions.connection, query: str, query_params: 
 
 def select_all(connection: psycopg2.extensions.connection, columnns: list, table: str) -> dict:
     cursor = connection.cursor()
+    columnns.append("deletado")
     cursor.execute(f"SELECT {', '.join(columnns)} FROM {table};")
     rows = cursor.fetchall()
 
     result = {f"{table}": []}
 
     for row in rows:
+        if row[-1]:
+            continue
+
         result[f"{table}"].append(dict(zip(columnns, row)))
 
     return result
@@ -73,12 +78,14 @@ def get_user_id(connection: psycopg2.extensions.connection, username: str):
     if result is not None:
         return result["usuarios"][0]["id"]
     else:
-        return False
+        raise fastapi.HTTPException(status_code=401, detail="Acesso não permitido")
     
 
 def select_where(connection: psycopg2.extensions.connection, value: str, comun_fetch: str, table_fetch: str, return_columns: list) -> dict:
     cursor = connection.cursor()
     
+    return_columns.append("deletado")
+
     query_sql = sql.SQL("SELECT {columns} FROM {table} WHERE {condition_column} = %s").format(
         columns=sql.SQL(', ').join(map(sql.Identifier, return_columns)),
         table=sql.Identifier(table_fetch),
@@ -91,8 +98,11 @@ def select_where(connection: psycopg2.extensions.connection, value: str, comun_f
     result = {f"{table_fetch}": []}
 
     if not rows:
-        return {}
+        raise fastapi.HTTPException(status_code=404, detail="Item nao encontrado")
     for row in rows:
+        if row[-1]:
+            continue
+
         result[f"{table_fetch}"].append(dict(zip(return_columns, row)))
 
     return result
@@ -127,7 +137,7 @@ def check_existence(connection: psycopg2.extensions.connection, table: str, colu
     result = select_where(connection, value, column, table, ["id"])
 
     if not result:
-        return False
+        raise fastapi.HTTPException(status_code=404, detail="Item nao encontrado")
     else:
         return True
     
@@ -148,6 +158,6 @@ def update_data(connection: psycopg2.extensions.connection, table: str, column: 
     except Exception as e:
         print(traceback.format_exc())
 
-    connection.rollback()
-    return False
+        connection.rollback()
+        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
 
