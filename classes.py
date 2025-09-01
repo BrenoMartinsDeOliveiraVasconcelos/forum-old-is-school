@@ -23,3 +23,6 @@ class SendMessage(pydantic.BaseModel):
 class Avatar(pydantic.BaseModel):
     link_avatar: pydantic.HttpUrl
 
+
+class Bio(pydantic.BaseModel):
+    texto: str

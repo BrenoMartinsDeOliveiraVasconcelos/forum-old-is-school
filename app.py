@@ -266,3 +266,18 @@ async def edit_avatar(link_avatar: classes.Avatar, user_id: int, current_user_ap
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     
     return {"status": "OK"}
+
+
+@app.post("/usuarios/{user_id}/editar/biografia")
+async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    logged_id = utils.get_user_id(database, current_user_apelido)
+
+    if logged_id != user_id:
+        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+
+    update = utils.update_data(database, "usuarios", "biografia", "id", user_id, str(bio.texto))    
+
+    if not update:
+        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+    return {"status": "OK"}

@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS "usuarios" (
 	"apelido" VARCHAR(16) NOT NULL,
 	"hash_senha" TEXT NOT NULL,
 	"link_avatar" TEXT NOT NULL,
+	"biografia" TEXT NULL DEFAULT NULL,
 	PRIMARY KEY ("id"),
 	UNIQUE ("apelido")
 );
