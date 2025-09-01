@@ -62,7 +62,7 @@ async def create_user(user: classes.UserCreate):
     result = utils.insert_into(database, "usuarios", ["apelido", "link_avatar", "hash_senha"], [user.apelido, str(user.link_avatar), password_hash], "id")
 
     if result:
-        return {"user_id": result[0]}
+        return {"user_id": result[0]} #type: ignore
     elif result is None:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     elif result is False:
@@ -95,13 +95,13 @@ async def comment(info: classes.Comment, current_user_apelido: str = fastapi.Dep
     if not autor_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
     
-    if not utils.check_existence(database, "posts", "id", info.post_id):
+    if not utils.check_existence(database, "posts", "id", str(info.post_id)):
         raise fastapi.HTTPException(status_code=404, detail="Post nao encontrado")
 
     result = utils.insert_into(database, "comentarios", ["autor_id", "post_id", "conteudo"], [autor_id, info.post_id, info.conteudo], "id")
 
     if result:
-        return {"comment_id": result[0]}
+        return {"comment_id": result[0]} #type: ignore
     else:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     
@@ -174,7 +174,7 @@ async def get_comments():
 # Posts por id
 @app.get("/posts/{post_id}")
 async def get_post(post_id: int):
-    posts = utils.select_where(database, post_id, "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+    posts = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
     
     if not posts:
         raise fastapi.HTTPException(status_code=404, detail="Post nao encontrado")
@@ -195,21 +195,23 @@ async def get_post(post_id: int):
 # Tudo relacionado ao usuário
 @app.get("/usuarios/{user_id}")
 async def get_user_content(user_id: int):
-    users = utils.select_where(database, user_id, "id", "usuarios", ["id", "apelido", "link_avatar"])
+    str_user_id = str(user_id)
+
+    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "link_avatar"])
     
     if not users:
         raise fastapi.HTTPException(status_code=404, detail="Usuário nao encontrado")
 
     for user in users["usuarios"]:
-        user["posts"] = utils.select_where(database, user_id, "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
-        user["mensagens"] = utils.select_where(database, user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
-        user["comentarios"] = utils.select_where(database, user_id, "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+        user["posts"] = utils.select_where(database, str_user_id, "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+        user["mensagens"] = utils.select_where(database, str_user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+        user["comentarios"] = utils.select_where(database, str_user_id, "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
     return users
 
 
 @app.get("/comentarios/{comentario_id}")
 async def get_comment(comentario_id: int):
-    comentarios = utils.select_where(database, comentario_id, "id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+    comentarios = utils.select_where(database, str(comentario_id), "id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
     
     if not comentarios:
         raise fastapi.HTTPException(status_code=404, detail="Comentario nao encontrado")
@@ -223,7 +225,7 @@ async def get_comment(comentario_id: int):
 
 @app.get("/mensagens/{mensagem_id}")
 async def get_msg(mensagem_id: int):
-    mensagens = utils.select_where(database, mensagem_id, "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+    mensagens = utils.select_where(database, str(mensagem_id), "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
     
     if not mensagens:
         raise fastapi.HTTPException(status_code=404, detail="Mensagem nao encontrada")
@@ -238,17 +240,17 @@ async def get_msg(mensagem_id: int):
 
 @app.get("/usuarios/{user_id}/posts")
 async def get_user_posts(user_id: int):
-    return utils.select_where(database, user_id, "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+    return utils.select_where(database, str(user_id), "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
 
 
 @app.get("/usuarios/{user_id}/comentarios")
 async def get_user_comments(user_id: int):
-    return utils.select_where(database, user_id, "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+    return utils.select_where(database, str(user_id), "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
 
 
 @app.get("/usuarios/{user_id}/mensagens")
 async def get_user_messages(user_id: int):
-    return utils.select_where(database, user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+    return utils.select_where(database, str(user_id), "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
 
 
 # Edição de perfil e afins
@@ -260,7 +262,7 @@ async def edit_avatar(link_avatar: classes.Avatar, user_id: int, current_user_ap
     if logged_id != user_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
 
-    update = utils.update_data(database, "usuarios", "link_avatar", "id", user_id, str(link_avatar.link_avatar))    
+    update = utils.update_data(database, "usuarios", "link_avatar", "id", str(user_id), str(link_avatar.link_avatar))    
 
     if not update:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
@@ -275,7 +277,7 @@ async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = f
     if logged_id != user_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
 
-    update = utils.update_data(database, "usuarios", "biografia", "id", user_id, str(bio.texto))    
+    update = utils.update_data(database, "usuarios", "biografia", "id", str(user_id), str(bio.texto))    
 
     if not update:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")

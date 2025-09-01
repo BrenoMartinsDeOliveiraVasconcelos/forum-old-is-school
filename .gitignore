@@ -209,5 +209,5 @@ __marimo__/
 
 # VirtualEnv
 
-.*env
+*env
 start.sh

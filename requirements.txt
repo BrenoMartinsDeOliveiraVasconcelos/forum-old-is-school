@@ -1,4 +1,4 @@
 fastapi[all]
-jose[cryptographu]
+jose[cryptography]
 passlib[bcrypt]
 psycopg2-binary
