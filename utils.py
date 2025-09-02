@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 import traceback
 import fastapi
+import datetime
 
 REGEXES = {
     "url": "https?:\\/\\/(?:www\\.)?([-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\b)*(\\/[\\/\\d\\w\\.-]*)*(?:[\\?])*(.+)*",
@@ -66,7 +67,13 @@ def select_all(connection: psycopg2.extensions.connection, columnns: list, table
         if row[-1]:
             continue
 
-        result[f"{table}"].append(dict(zip(columnns, row)))
+        mut_row = [r for r in row]
+
+        for i in range(len(mut_row)):
+            if isinstance(mut_row[i], datetime.datetime):
+                mut_row[i] = mut_row[i].strftime("%Y-%m-%d %H:%M:%S")
+
+        result[f"{table}"].append(dict(zip(columnns, mut_row)))
 
     return result
 
@@ -81,7 +88,7 @@ def get_user_id(connection: psycopg2.extensions.connection, username: str):
         raise fastapi.HTTPException(status_code=401, detail="Acesso não permitido")
     
 
-def select_where(connection: psycopg2.extensions.connection, value: str, comun_fetch: str, table_fetch: str, return_columns: list) -> dict:
+def select_where(connection: psycopg2.extensions.connection, value: str, comun_fetch: str, table_fetch: str, return_columns: list, raise_on_notfound: bool = False) -> dict:
     cursor = connection.cursor()
     
     return_columns.append("deletado")
@@ -98,12 +105,21 @@ def select_where(connection: psycopg2.extensions.connection, value: str, comun_f
     result = {f"{table_fetch}": []}
 
     if not rows:
-        raise fastapi.HTTPException(status_code=404, detail="Item nao encontrado")
+        if raise_on_notfound:
+            raise fastapi.HTTPException(status_code=404, detail="Item nao encontrado")
+        else :
+            return result
     for row in rows:
         if row[-1]:
             continue
+        
+        mut_row = [r for r in row]
 
-        result[f"{table_fetch}"].append(dict(zip(return_columns, row)))
+        for i in range(len(mut_row)):
+            if isinstance(mut_row[i], datetime.datetime):
+                mut_row[i] = mut_row[i].strftime("%Y-%m-%d %H:%M:%S")
+
+        result[f"{table_fetch}"].append(dict(zip(return_columns, mut_row)))
 
     return result
 

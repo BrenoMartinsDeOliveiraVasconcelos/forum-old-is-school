@@ -5,6 +5,7 @@ import utils
 import classes
 import auth
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 from datetime import timedelta
 
 postgree_user = os.getenv("P_USER")
@@ -26,6 +27,8 @@ deletion = app_conifg["text_on_deletion"]
 app = fastapi.FastAPI(
     title="OldSchool"
 )
+
+headers = {"Access-Control-Allow-Origin": "*"}
 
 
 @app.get("/")
@@ -50,7 +53,10 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = fastapi.
     access_token = auth.create_access_token(
         data={"sub": form_data.username}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    j = {"access_token": access_token, "token_type": "bearer"}
+
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.post("/usuarios")
@@ -63,7 +69,9 @@ async def create_user(user: classes.UserCreate):
     
     result = utils.insert_into(database, "usuarios", ["apelido", "link_avatar", "hash_senha"], [user.apelido, str(user.link_avatar), password_hash], "id")
 
-    return {"user_id": result[0]} #type: ignore
+    j = {"user_id": result[0]}
+
+    return JSONResponse(content=j, headers=headers) #type: ignore
     
 
 @app.post("/posts")
@@ -72,7 +80,9 @@ async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Dep
     
     result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo"], [autor_id, info.titulo, info.conteudo], "id")
 
-    return {"post_id": result[0]}
+    j = {"post_id": result[0]}
+
+    return JSONResponse(content=j, headers=headers)
     
 
 @app.post("/comentarios")
@@ -82,7 +92,9 @@ async def comment(info: classes.Comment, current_user_apelido: str = fastapi.Dep
     utils.check_existence(database, "posts", "id", str(info.post_id))
 
     result = utils.insert_into(database, "comentarios", ["autor_id", "post_id", "conteudo"], [autor_id, info.post_id, info.conteudo], "id")
-    return {"comment_id": result[0]} #type: ignore
+    
+    j = {"comment_id": result[0]}
+    return JSONResponse(content=j, headers=headers)
     
 
 @app.post("/mensagens")
@@ -93,15 +105,17 @@ async def send_message(info: classes.SendMessage, current_user_apelido: str = fa
     #result = utils.query(database, query, (autor_id, info.mensagem))
 
     result = utils.insert_into(database, "mensagens", ["autor_id", "mensagem"], [autor_id, info.mensagem], "id")
-    
-    return {"message_id": result[0]}
+    j = {"message_id": result[0]}
+    return JSONResponse(content=j, headers=headers)
+
     
 
 # Métodos GET que pegam todos de cada categoria
 
 @app.get("/usuarios")
 async def get_users():
-    return utils.select_all(database, ["id", "apelido", "link_avatar", "deletado"], "usuarios")
+    j = utils.select_all(database, ["id", "apelido", "link_avatar", "deletado"], "usuarios")
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.get("/posts")
@@ -119,7 +133,7 @@ async def get_posts():
                     comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
                     post["comentarios"].append(comentario)
 
-    return posts
+    return JSONResponse(content=posts, headers=headers)
 
     
 @app.get("/mensagens")
@@ -128,7 +142,9 @@ async def get_messages():
     
     for mensagem in mensagens["mensagens"]:
         mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
-    return mensagens
+    k = mensagens
+
+    return JSONResponse(content=mensagens, headers=headers)
 
 
 
@@ -139,12 +155,12 @@ async def get_comments():
     for comentario in comentarios["comentarios"]:
         comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
         comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
-    return comentarios
+    return JSONResponse(content=comentarios, headers=headers)
 
 # Posts por id
 @app.get("/posts/{post_id}")
 async def get_post(post_id: int):
-    posts = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+    posts = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"], True)
     
     
     for post in posts["posts"]:
@@ -157,7 +173,7 @@ async def get_post(post_id: int):
                     comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
                     post["comentarios"].append(comentario)
 
-    return posts
+    return JSONResponse(content=posts, headers=headers)
 
 
 # Tudo relacionado ao usuário
@@ -165,53 +181,59 @@ async def get_post(post_id: int):
 async def get_user_content(user_id: int):
     str_user_id = str(user_id)
 
-    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "link_avatar"])
+    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "link_avatar"], True)
     
 
     for user in users["usuarios"]:
         user["posts"] = utils.select_where(database, str_user_id, "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
         user["mensagens"] = utils.select_where(database, str_user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
         user["comentarios"] = utils.select_where(database, str_user_id, "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
-    return users
+    return JSONResponse(content=users, headers=headers)
 
 
 @app.get("/comentarios/{comentario_id}")
 async def get_comment(comentario_id: int):
-    comentarios = utils.select_where(database, str(comentario_id), "id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+    comentarios = utils.select_where(database, str(comentario_id), "id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"], True)
     
     
     for comentario in comentarios["comentarios"]:
         comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
         comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
 
-    return comentarios
+    return JSONResponse(content=comentarios, headers=headers)
 
 
 @app.get("/mensagens/{mensagem_id}")
 async def get_msg(mensagem_id: int):
-    mensagens = utils.select_where(database, str(mensagem_id), "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+    mensagens = utils.select_where(database, str(mensagem_id), "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"], True)
     
     for mensagem in mensagens["mensagens"]:
         mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
 
-    return mensagens
+    return JSONResponse(content=mensagens, headers=headers)
 
 
 # Conseguir do usuário cada coisa
 
 @app.get("/usuarios/{user_id}/posts")
 async def get_user_posts(user_id: int):
-    return utils.select_where(database, str(user_id), "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+    j = utils.select_where(database, str(user_id), "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.get("/usuarios/{user_id}/comentarios")
 async def get_user_comments(user_id: int):
-    return utils.select_where(database, str(user_id), "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+    j = utils.select_where(database, str(user_id), "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.get("/usuarios/{user_id}/mensagens")
 async def get_user_messages(user_id: int):
-    return utils.select_where(database, str(user_id), "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+    j = utils.select_where(database, str(user_id), "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+
+    return JSONResponse(content=j, headers=headers)
 
 
 # Edição de perfil e afins
@@ -222,7 +244,8 @@ async def edit_avatar(link_avatar: classes.Avatar, user_id: int, current_user_ap
     utils.update_data(database, "usuarios", "link_avatar", "id", str(user_id), str(link_avatar.link_avatar))    
 
     
-    return {"status": "OK"}
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.post("/usuarios/{user_id}/editar/biografia")
@@ -231,7 +254,8 @@ async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = f
 
     utils.update_data(database, "usuarios", "biografia", "id", str(user_id), str(bio.texto))    
 
-    return {"status": "OK"}
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
 
 
 # Deleção de coisas
@@ -254,7 +278,9 @@ async def delete_user(user_id: int, current_user_apelido: str = fastapi.Depends(
     if not delete:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     
-    return {"status": "Bye :("}
+    j = {"status": "Bye :("}
+
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.post("/posts/{post_id}/deletar")
@@ -279,7 +305,9 @@ async def delete_post(post_id: int, current_user_apelido: str = fastapi.Depends(
     if False in proccess:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     
-    return {"status": "OK"}
+    j = {"status": "OK"}
+
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.post("/comentarios/{comment_id}/deletar")
@@ -303,7 +331,8 @@ async def delete_comment(comment_id: int, current_user_apelido: str = fastapi.De
     if False in proccess:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     
-    return {"status": "OK"}
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
 
 
 @app.post("/mensagens/{message_id}/deletar")
@@ -327,4 +356,5 @@ async def delete_message(message_id: int, current_user_apelido: str = fastapi.De
     if False in proccess:
         raise fastapi.HTTPException(status_code=500, detail="Erro interno")
     
-    return {"status": "OK"}
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
