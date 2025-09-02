@@ -123,30 +123,143 @@ Substitua ```nickname``` e ```senhamuitoforte``` pelos seus respectivos valores.
 O resultado será algo parecido como ```Bearer eyC4rr4ct3r3sT0ken```. Coloque o valor que se parece com isso no cabeçalho ```Authorization``` em todo request POST. Os passos seguintes será assumido que esse header estará presente.'
 
 ## 3.3 Endopoins
+
+**Nota: Em regra, todos os ```body``` são em JSON e cada key é uma string exceto caso dito explicitamente o contrário.**
+
 ### 3.3.1 /usuarios
 
-| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+Esse endpoint é relacionado manipulação e obteção de dados de usuários. 
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | GET | - | - | Lista de usuários | - |
 | POST | - | ```apelido```, ```link_avatar```, ```senha``` | ```user_id``` | - |
 
+#### 3.3.1.1 /usuarios/user_id
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```user_id``` | - | Lista com o usuário e todos os seus posts, comentários e mensagens | - |
+
+##### 3.3.1.1.1 /usuarios/user_id/posts
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```user_id``` | - | Lista de posts feito pelo usuário | - |
+
+##### 3.3.1.1.2 /usuarios/user_id/comentarios
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```user_id``` | - | Lista de comentários feito pelo usuário | - |
+
+##### 3.3.1.1.3 /usuarios/user_id/mensagens
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```user_id``` | - | Lista de mensagens enviadas pelo usuário | - |
+
+#### 3.3.1.2 /usuarios/user_id/editar
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| - | - | - | - | Raiz de edição |
+
+##### 3.3.1.2.1 /usuarios/user_id/editar/avatar
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```user_id``` | ```link_avatar``` | ```status: ok```| - |
+
+##### 3.3.1.2.2 /usuarios/user_id/editar/biografia
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```user_id``` | ```biografia``` | ```status: ok```| - |
+
+
+#### 3.3.1.3 /usuarios/user_id/deletar
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```user_id``` | - | ```status: bye :(```| - |
+ 
 ### 3.3.2 /posts
 
-| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+Endpoint relacionado a posts. Possui uma quanitdade menor de chamdas em relação a /usuarios
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | GET | - | - | Lista de posts | - |
 | POST | - | ```titulo```, ```conteudo``` | ```status: ok```| - |
 
+
+#### 3.3.2.1 /posts/post_id
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```post_id``` | - | Lista com o post e todos os seus comentários | - |
+
+
+##### 3.3.2.1.1 /posts/post_id/deletar
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```post_id``` | - | ```status: ok```| - |
+
 ### 3.3.3 /comentarios
 
-| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+Endpoint de comentários.
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | GET | - | - | Lista de comentários | - |
 | POST | - | ```post_id```, ```conteudo``` | ```status: ok```| - |
 
+
+#### 3.3.3.1 /comentarios/comentario_id
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```comentario_id``` | - | Lista com o comentário | - |
+
+
+##### 3.3.3.1.1 /comentarios/comentario_id/deletar
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```comentario_id``` | - | ```status: ok```| - |
+
 ### 3.3.4 /mensagens
 
-| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | GET | - | - | Lista de mensagens | - |
 | POST | - | ```mensagem``` | ```status: ok```| - |
+
+
+#### 3.3.4.1 /mensagens/mensagem_id
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```mensagem_id``` | - | Lista com a mensagem | - |  
+
+
+##### 3.3.4.1.1 /mensagens/mensagem_id/deletar
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```mensagem_id``` | - | ```status: ok```| - |
+
+
+# 4 - Status codes
+
+A API possui um sistema consistente de status code, retornando um códiggo HTTP de erro caso algo esteja errado.
+
+| Códigos | Descrição |
+| --- | --- |
+| 400 | O request possui um erro |
+| 401 | Acesso negado ao recurso |
+| 404 | Recurso não encontrado |
+| 409 | O request poussui um valor que deve ser unico, mas esse valor já existe |
+| 500 | Erro no servidor |

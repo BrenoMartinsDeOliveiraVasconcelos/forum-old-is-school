@@ -116,21 +116,25 @@ def insert_into(connection: psycopg2.extensions.connection, table: str, columns:
         columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
         values=sql.SQL(', ').join(map(sql.Literal, values)),
         returning=sql.Identifier(returning))
+    
+    rollback = True
 
     try:
         cursor.execute(query_sql)
         connection.commit()
         result = cursor.fetchone()
+        rollback = False
 
         return result
     except (psycopg2.errors.UniqueViolation):
-        item_return = False
+        fastapi.raise_exception(fastapi.HTTPException(status_code=409, detail="Item ja cadastrado"))
     except (psycopg2.errors.StringDataRightTruncation):
-        item_return = ERROR_CODES["TOO_LONG"]
+        fastapi.raise_exception(fastapi.HTTPException(status_code=400, detail="Conteudo muito longo"))
+    finally:
 
-    connection.rollback()
-
-    return item_return
+        if rollback:
+            connection.rollback()
+    
 
 
 def check_existence(connection: psycopg2.extensions.connection, table: str, column: str, value: str):

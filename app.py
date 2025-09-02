@@ -63,12 +63,7 @@ async def create_user(user: classes.UserCreate):
     
     result = utils.insert_into(database, "usuarios", ["apelido", "link_avatar", "hash_senha"], [user.apelido, str(user.link_avatar), password_hash], "id")
 
-    if result:
-        return {"user_id": result[0]} #type: ignore
-    elif result is None:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
-    elif result is False:
-        raise fastapi.HTTPException(status_code=409, detail="Usuário ja cadastrado")
+    return {"user_id": result[0]} #type: ignore
     
 
 @app.post("/posts")
@@ -77,14 +72,7 @@ async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Dep
     
     result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo"], [autor_id, info.titulo, info.conteudo], "id")
 
-    if result:
-        if isinstance(result, tuple):
-            return {"post_id": result[0]}
-        elif isinstance(result, int):
-            if utils.ERROR_CODES["TOO_LONG"] == result:
-                raise fastapi.HTTPException(status_code=400, detail="Conteudo muito longo")
-    else:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    return {"post_id": result[0]}
     
 
 @app.post("/comentarios")
@@ -94,11 +82,7 @@ async def comment(info: classes.Comment, current_user_apelido: str = fastapi.Dep
     utils.check_existence(database, "posts", "id", str(info.post_id))
 
     result = utils.insert_into(database, "comentarios", ["autor_id", "post_id", "conteudo"], [autor_id, info.post_id, info.conteudo], "id")
-
-    if result:
-        return {"comment_id": result[0]} #type: ignore
-    else:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    return {"comment_id": result[0]} #type: ignore
     
 
 @app.post("/mensagens")
@@ -109,14 +93,8 @@ async def send_message(info: classes.SendMessage, current_user_apelido: str = fa
     #result = utils.query(database, query, (autor_id, info.mensagem))
 
     result = utils.insert_into(database, "mensagens", ["autor_id", "mensagem"], [autor_id, info.mensagem], "id")
-
-    if result:
-        if isinstance(result, tuple):
-            return {"message_id": result[0]}
-        else:
-            raise fastapi.HTTPException(status_code=500, detail="Erro interno")
-    else:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+    return {"message_id": result[0]}
     
 
 # Métodos GET que pegam todos de cada categoria
@@ -240,11 +218,7 @@ async def get_user_messages(user_id: int):
 
 @app.post("/usuarios/{user_id}/editar/avatar")
 async def edit_avatar(link_avatar: classes.Avatar, user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
-    logged_id = utils.get_user_id(database, current_user_apelido)
-
-    if logged_id != user_id:
-        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
-
+    utils.get_user_id(database, current_user_apelido)
     utils.update_data(database, "usuarios", "link_avatar", "id", str(user_id), str(link_avatar.link_avatar))    
 
     
@@ -253,10 +227,7 @@ async def edit_avatar(link_avatar: classes.Avatar, user_id: int, current_user_ap
 
 @app.post("/usuarios/{user_id}/editar/biografia")
 async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
-    logged_id = utils.get_user_id(database, current_user_apelido)
-
-    if logged_id != user_id:
-        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+    utils.get_user_id(database, current_user_apelido)
 
     utils.update_data(database, "usuarios", "biografia", "id", str(user_id), str(bio.texto))    
 
@@ -266,10 +237,7 @@ async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = f
 # Deleção de coisas
 @app.post("/usuarios/{user_id}/deletar")
 async def delete_user(user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
-    logged_id = utils.get_user_id(database, current_user_apelido)
-
-    if logged_id != user_id:
-        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+    utils.get_user_id(database, current_user_apelido)
 
     proccess = [utils.update_data(database, "usuarios", "apelido", "id", str(user_id), deletion),
                 utils.update_data(database, "usuarios", "hash_senha", "id", str(user_id), deletion),
@@ -291,7 +259,7 @@ async def delete_user(user_id: int, current_user_apelido: str = fastapi.Depends(
 
 @app.post("/posts/{post_id}/deletar")
 async def delete_post(post_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
-    logged_id = utils.get_user_id(database, current_user_apelido)
+    user_id = utils.get_user_id(database, current_user_apelido)
 
     utils.check_existence(database, "posts", "id", str(post_id))
     
@@ -299,8 +267,8 @@ async def delete_post(post_id: int, current_user_apelido: str = fastapi.Depends(
 
     post = post_data["posts"][0]
 
-    if post["autor_id"] != logged_id:
-        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+    if post["autor_id"] != user_id:
+        raise fastapi.HTTPException(status_code=401, detail="Nao autorizado")
     
     proccess = [
         utils.update_data(database, "posts", "titulo", "id", str(post_id), deletion),
@@ -316,7 +284,7 @@ async def delete_post(post_id: int, current_user_apelido: str = fastapi.Depends(
 
 @app.post("/comentarios/{comment_id}/deletar")
 async def delete_comment(comment_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
-    logged_id = utils.get_user_id(database, current_user_apelido)
+    user_id = utils.get_user_id(database, current_user_apelido)
 
     utils.check_existence(database, "comentarios", "id", str(comment_id))
     
@@ -324,8 +292,8 @@ async def delete_comment(comment_id: int, current_user_apelido: str = fastapi.De
 
     comment = comment_data["comentarios"][0]
 
-    if comment["autor_id"] != logged_id:
-        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
+    if comment["autor_id"] != user_id:
+        raise fastapi.HTTPException(status_code=401, detail="Nao autorizado")
     
     proccess = [
         utils.update_data(database, "comentarios", "conteudo", "id", str(comment_id), deletion),
