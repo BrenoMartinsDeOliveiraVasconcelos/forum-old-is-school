@@ -96,7 +96,7 @@ Sendo ```--port``` a porta que a api vai responder e ```--host``` o ip.
 
 Durante a documentação, será usado 127.0.0.1 como ip e 9090 como porta parta fins de facilitar. Caso tenha uma outra configuração, substitua. Valhe ressaltar que, exceto quando dito explicitamente, sempre deve ser colocado um header ```Content-Type``` como ```application/json```.
 
-# 3.1 Preparações
+## 3.1 Preparações
 
 Caso tenha acabado de instalar, crie um usuário para poder testar a api caso sinta que precise.
 
@@ -110,7 +110,7 @@ Para isso, basta fazer um POST para ```127.0.0.1:9090/usuarios```. Coloque em ``
 }
 ```
 
-# 3.2 Conseguir token de autenticação
+## 3.2 Conseguir token de autenticação
 
 Para conseguir o token de autenticação, basta fazer um POST para ```127.0.0.1:9090/token```. Coloque em ```body``` algo como abaixo, além de definir ```Content-Type``` como ```application/x-www-form-urlencoded```.
 
@@ -120,4 +120,33 @@ username=nickname&password=senhamuitoforte
 
 Substitua ```nickname``` e ```senhamuitoforte``` pelos seus respectivos valores.
 
-O resultado será algo parecido como ```Bearer eyC4rr4ct3r3sT0ken```. Coloque o valor que se parece com isso no cabeçalho ```Authorization``` em todo request POST. Os passos seguintes será assumido que esse header estará presente.
+O resultado será algo parecido como ```Bearer eyC4rr4ct3r3sT0ken```. Coloque o valor que se parece com isso no cabeçalho ```Authorization``` em todo request POST. Os passos seguintes será assumido que esse header estará presente.'
+
+## 3.3 Endopoins
+### 3.3.1 /usuarios
+
+| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | - | - | Lista de usuários | - |
+| POST | - | ```apelido```, ```link_avatar```, ```senha``` | ```user_id``` | - |
+
+### 3.3.2 /posts
+
+| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | - | - | Lista de posts | - |
+| POST | - | ```titulo```, ```conteudo``` | ```status: ok```| - |
+
+### 3.3.3 /comentarios
+
+| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | - | - | Lista de comentários | - |
+| POST | - | ```post_id```, ```conteudo``` | ```status: ok```| - |
+
+### 3.3.4 /mensagens
+
+| Métodoos suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | - | - | Lista de mensagens | - |
+| POST | - | ```mensagem``` | ```status: ok```| - |
