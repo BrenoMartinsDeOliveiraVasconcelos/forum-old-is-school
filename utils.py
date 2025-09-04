@@ -81,8 +81,8 @@ def select_all(
         query_part_1 += f" AND {condition_column} = %s"
         query_params.insert(0, condition_value)
 
-    if condition_column == "" or condition_value == "":
-        raise fastapi.HTTPException(status_code=400, detail="Faltam parametros")
+        if condition_column == "" or condition_value == "":
+            raise fastapi.HTTPException(status_code=400, detail="Faltam parametros")
 
     query_part_2 = """    
         ORDER BY id

@@ -114,7 +114,15 @@ async def send_message(info: classes.SendMessage, current_user_apelido: str = fa
 
 @app.get("/usuarios")
 async def get_users(paging: classes.Paging):
-    j = utils.select_all(database, ["id", "apelido", "link_avatar", "deletado"], "usuarios", paging.page, paging.page_size)
+    #j = utils.select_all(database, ["id", "apelido", "link_avatar", "deletado"], "usuarios", paging.page, paging.page_size)
+    
+    j = utils.select_all(
+        database,
+        ["id", "apelido", "link_avatar", "deletado"],
+        "usuarios",
+        paging.page,
+        paging.page_size
+    )
     return JSONResponse(content=j, headers=headers)
 
 
