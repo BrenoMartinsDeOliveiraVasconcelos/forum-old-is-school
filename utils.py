@@ -55,26 +55,53 @@ def query(connection: psycopg2.extensions.connection, query: str, query_params: 
     return last_row_added
 
 
-def select_all(connection: psycopg2.extensions.connection, columnns: list, table: str) -> dict:
+def select_all(
+    connection: psycopg2.extensions.connection,
+    columns: list,
+    table: str,
+    page: int = 1,
+    page_size: int = 10
+) -> dict:
+    columns = columns.copy()
+    if 'deletado' not in columns:
+        columns.append('deletado')
+
+    offset = (page - 1) * page_size
+
+    query = f"""
+        SELECT {', '.join(columns)} 
+        FROM {table} 
+        WHERE deletado = false
+        ORDER BY id
+        LIMIT %s OFFSET %s;
+    """
+    
     cursor = connection.cursor()
-    columnns.append("deletado")
-    cursor.execute(f"SELECT {', '.join(columnns)} FROM {table};")
+    cursor.execute(query, (page_size, offset))
     rows = cursor.fetchall()
 
-    result = {f"{table}": []}
+    result = {table: []}
+    col_names = [desc[0] for desc in cursor.description]
 
     for row in rows:
-        if row[-1]:
-            continue
+        row_dict = {}
+        for idx, col_name in enumerate(col_names):
+            if col_name == 'deletado':
+                continue
+                
+            value = row[idx]
+            if isinstance(value, datetime.datetime):
+                value = value.strftime("%Y-%m-%d %H:%M:%S")
+            row_dict[col_name] = value
+        
+        result[table].append(row_dict)
 
-        mut_row = [r for r in row]
-
-        for i in range(len(mut_row)):
-            if isinstance(mut_row[i], datetime.datetime):
-                mut_row[i] = mut_row[i].strftime("%Y-%m-%d %H:%M:%S")
-
-        result[f"{table}"].append(dict(zip(columnns, mut_row)))
-
+    result['page'] = {
+        'page': page,
+        'page_size': page_size,
+        'has_next': len(rows) == page_size
+    }
+    
     return result
 
 

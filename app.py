@@ -113,14 +113,14 @@ async def send_message(info: classes.SendMessage, current_user_apelido: str = fa
 # Métodos GET que pegam todos de cada categoria
 
 @app.get("/usuarios")
-async def get_users():
-    j = utils.select_all(database, ["id", "apelido", "link_avatar", "deletado"], "usuarios")
+async def get_users(paging: classes.Paging):
+    j = utils.select_all(database, ["id", "apelido", "link_avatar", "deletado"], "usuarios", paging.page, paging.page_size)
     return JSONResponse(content=j, headers=headers)
 
 
 @app.get("/posts")
-async def get_posts():
-    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts")
+async def get_posts(paging: classes.Paging):
+    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts", paging.page, paging.page_size)
 
     for post in posts["posts"]:
         post["comentarios"] = []
@@ -137,8 +137,8 @@ async def get_posts():
 
     
 @app.get("/mensagens")
-async def get_messages():
-    mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens")
+async def get_messages(paging: classes.Paging):
+    mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens", paging.page, paging.page_size)
     
     for mensagem in mensagens["mensagens"]:
         mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
@@ -149,8 +149,8 @@ async def get_messages():
 
 
 @app.get("/comentarios")
-async def get_comments():
-    comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios")
+async def get_comments(paging: classes.Paging):
+    comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios", paging.page, paging.page_size)
 
     for comentario in comentarios["comentarios"]:
         comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]

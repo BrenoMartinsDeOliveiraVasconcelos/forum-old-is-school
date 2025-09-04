@@ -26,3 +26,8 @@ class Avatar(pydantic.BaseModel):
 
 class Bio(pydantic.BaseModel):
     texto: str
+
+
+class Paging(pydantic.BaseModel):
+    page: int
+    page_size: int
