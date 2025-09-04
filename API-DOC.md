@@ -132,7 +132,7 @@ Esse endpoint é relacionado manipulação e obteção de dados de usuários.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | - | Lista de usuários | - |
+| GET | - | ```page: int```, ```page_size: int``` | Lista de usuários | - |
 | POST | - | ```apelido```, ```link_avatar```, ```senha``` | ```user_id``` | - |
 
 #### 3.3.1.1 /usuarios/user_id
@@ -190,7 +190,7 @@ Endpoint relacionado a posts. Possui uma quanitdade menor de chamdas em relaçã
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | - | Lista de posts | - |
+| GET | - | ```page: int```, ```page_size: int``` | Lista de posts | - |
 | POST | - | ```titulo```, ```conteudo``` | ```status: ok```| - |
 
 
@@ -213,7 +213,7 @@ Endpoint de comentários.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | - | Lista de comentários | - |
+| GET | - | ```page: int```, ```page_size: int``` | Lista de comentários | - |
 | POST | - | ```post_id```, ```conteudo``` | ```status: ok```| - |
 
 
@@ -234,7 +234,7 @@ Endpoint de comentários.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | - | Lista de mensagens | - |
+| GET | - | ```page: int```, ```page_size: int``` | Lista de mensagens | - |
 | POST | - | ```mensagem``` | ```status: ok```| - |
 
 
