@@ -164,30 +164,70 @@ async def get_post(post_id: int):
     
     
     for post in posts["posts"]:
-        post["comentarios"] = []
-        comentarios = utils.select_where(database, post["id"], "post_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
-        
+        post["comentarios"] = {"comentarios": []}
+        comentarios = utils.select_all(
+            connection=database,
+            columns=["id", "autor_id", "post_id", "conteudo", "timestamp"],
+            table="comentarios",
+            page=1,
+            page_size=100,
+            where=True,
+            condition_column="post_id",
+            condition_value=str(post["id"])
+        )
+
         if comentarios:
             for comentario in comentarios["comentarios"]:
-                if post["id"] == comentario["post_id"]:
-                    comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
-                    post["comentarios"].append(comentario)
+                comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+                post["comentarios"]["comentarios"].append(comentario)
+
+        post["comentarios"]["page"] = comentarios["page"]
 
     return JSONResponse(content=posts, headers=headers)
 
 
 # Tudo relacionado ao usuário
 @app.get("/usuarios/{user_id}")
-async def get_user_content(user_id: int):
+async def get_user_content(user_id: int, paging: classes.Paging):
     str_user_id = str(user_id)
 
     users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "link_avatar"], True)
     
 
     for user in users["usuarios"]:
-        user["posts"] = utils.select_where(database, str_user_id, "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
-        user["mensagens"] = utils.select_where(database, str_user_id, "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
-        user["comentarios"] = utils.select_where(database, str_user_id, "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+        user["posts"] = utils.select_all(
+            connection=database,
+            columns=["id", "autor_id", "titulo", "conteudo", "timestamp"],
+            table="posts",
+            page=paging.page,
+            page_size=paging.page_size,
+            where=True,
+            condition_column="autor_id",
+            condition_value=str_user_id
+        )
+
+        user["mensagens"] = utils.select_all(
+            connection=database,
+            columns=["id", "autor_id", "mensagem", "timestamp"],
+            table="mensagens",
+            page=paging.page,
+            page_size=paging.page_size,
+            where=True,
+            condition_column="autor_id",
+            condition_value=str_user_id
+        )
+
+        user["comentarios"] = utils.select_all(
+            connection=database,
+            columns=["id", "autor_id", "post_id", "conteudo", "timestamp"],
+            table="comentarios",
+            page=paging.page,
+            page_size=paging.page_size,
+            where=True,
+            condition_column="autor_id",
+            condition_value=str_user_id
+        )
+    
     return JSONResponse(content=users, headers=headers)
 
 
@@ -216,22 +256,51 @@ async def get_msg(mensagem_id: int):
 # Conseguir do usuário cada coisa
 
 @app.get("/usuarios/{user_id}/posts")
-async def get_user_posts(user_id: int):
-    j = utils.select_where(database, str(user_id), "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+async def get_user_posts(user_id: int, paging: classes.Paging):
+    #j = utils.select_where(database, str(user_id), "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
+    j = utils.select_all(
+        connection=database,
+        columns=["id", "autor_id", "titulo", "conteudo", "timestamp"],
+        table="posts",
+        page=paging.page,
+        page_size=paging.page_size,
+        where=True,
+        condition_column="autor_id",
+        condition_value=str(user_id)
+    )
 
     return JSONResponse(content=j, headers=headers)
 
 
 @app.get("/usuarios/{user_id}/comentarios")
-async def get_user_comments(user_id: int):
-    j = utils.select_where(database, str(user_id), "autor_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
-
+async def get_user_comments(user_id: int, paging: classes.Paging):
+    j = utils.select_all(
+        connection=database,
+        columns=["id", "autor_id", "post_id", "conteudo", "timestamp"],
+        table="comentarios",
+        page=paging.page,
+        page_size=paging.page_size,
+        where=True,
+        condition_column="autor_id",
+        condition_value=str(user_id)
+    )
     return JSONResponse(content=j, headers=headers)
 
 
 @app.get("/usuarios/{user_id}/mensagens")
-async def get_user_messages(user_id: int):
-    j = utils.select_where(database, str(user_id), "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+async def get_user_messages(user_id: int, paging: classes.Paging):
+    #j = utils.select_where(database, str(user_id), "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
+    
+    j = utils.select_all(
+        connection=database,
+        columns=["id", "autor_id", "mensagem", "timestamp"],
+        table="mensagens",
+        page=paging.page,
+        page_size=paging.page_size,
+        where=True,
+        condition_column="autor_id",
+        condition_value=str(user_id)
+    )
 
     return JSONResponse(content=j, headers=headers)
 

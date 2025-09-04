@@ -60,24 +60,39 @@ def select_all(
     columns: list,
     table: str,
     page: int = 1,
-    page_size: int = 10
+    page_size: int = 10,
+    where: bool = False,
+    condition_column: str = "",
+    condition_value: str = "",
 ) -> dict:
     columns = columns.copy()
     if 'deletado' not in columns:
         columns.append('deletado')
 
     offset = (page - 1) * page_size
+    query_params = [page_size, offset]
 
-    query = f"""
+    query_part_1 = f"""
         SELECT {', '.join(columns)} 
         FROM {table} 
-        WHERE deletado = false
+        WHERE deletado = false"""
+    
+    if where:
+        query_part_1 += f" AND {condition_column} = %s"
+        query_params.insert(0, condition_value)
+
+    if condition_column == "" or condition_value == "":
+        raise fastapi.HTTPException(status_code=400, detail="Faltam parametros")
+
+    query_part_2 = """    
         ORDER BY id
         LIMIT %s OFFSET %s;
     """
+
+    query_full = query_part_1 + query_part_2
     
     cursor = connection.cursor()
-    cursor.execute(query, (page_size, offset))
+    cursor.execute(query_full, tuple(query_params))
     rows = cursor.fetchall()
 
     result = {table: []}
@@ -104,16 +119,6 @@ def select_all(
     
     return result
 
-
-
-def get_user_id(connection: psycopg2.extensions.connection, username: str):
-    result = select_where(connection, username, "apelido", "usuarios", ["id"])
-
-    if result is not None:
-        return result["usuarios"][0]["id"]
-    else:
-        raise fastapi.HTTPException(status_code=401, detail="Acesso não permitido")
-    
 
 def select_where(connection: psycopg2.extensions.connection, value: str, comun_fetch: str, table_fetch: str, return_columns: list, raise_on_notfound: bool = False) -> dict:
     cursor = connection.cursor()
@@ -149,6 +154,15 @@ def select_where(connection: psycopg2.extensions.connection, value: str, comun_f
         result[f"{table_fetch}"].append(dict(zip(return_columns, mut_row)))
 
     return result
+
+
+def get_user_id(connection: psycopg2.extensions.connection, username: str):
+    result = select_where(connection, username, "apelido", "usuarios", ["id"])
+
+    if result is not None:
+        return result["usuarios"][0]["id"]
+    else:
+        raise fastapi.HTTPException(status_code=401, detail="Acesso não permitido")
 
 
 def insert_into(connection: psycopg2.extensions.connection, table: str, columns: list, values: list, returning: str):

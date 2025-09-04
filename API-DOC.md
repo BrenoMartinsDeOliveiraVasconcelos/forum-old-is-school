@@ -139,25 +139,25 @@ Esse endpoint é relacionado manipulação e obteção de dados de usuários.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | - | Lista com o usuário e todos os seus posts, comentários e mensagens | - |
+| GET | ```user_id``` | ```page: int```, ```page_size: int``` | Lista com o usuário e todos os seus posts, comentários e mensagens | - |
 
 ##### 3.3.1.1.1 /usuarios/user_id/posts
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | - | Lista de posts feito pelo usuário | - |
+| GET | ```user_id``` | ```page: int```, ```page_size: int``` | | Lista de posts feito pelo usuário | - |
 
 ##### 3.3.1.1.2 /usuarios/user_id/comentarios
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | - | Lista de comentários feito pelo usuário | - |
+| GET | ```user_id``` | ```page: int```, ```page_size: int``` | | Lista de comentários feito pelo usuário | - |
 
 ##### 3.3.1.1.3 /usuarios/user_id/mensagens
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | - | Lista de mensagens enviadas pelo usuário | - |
+| GET | ```user_id``` | ```page: int```, ```page_size: int``` | | Lista de mensagens enviadas pelo usuário | - |
 
 #### 3.3.1.2 /usuarios/user_id/editar
 
