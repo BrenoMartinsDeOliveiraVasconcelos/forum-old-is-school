@@ -56,7 +56,7 @@ Preencha o arquivo config.json com as configurações feitas na hora da instala�
 ```json
 {
     "database": {
-        "name": "public",
+        "name": "postgres",
         "host": "127.0.0.1",
         "port": 5432
     },
