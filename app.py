@@ -435,3 +435,29 @@ async def delete_message(message_id: int, current_user_apelido: str = fastapi.De
     
     j = {"status": "OK"}
     return JSONResponse(content=j, headers=headers)
+
+
+# Search
+
+@app.get("/pesquisar/posts/{search_term}")
+async def search_posts(search_term: str, pagging: classes.Paging):
+    result = utils.search(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts", search_term, "titulo", pagging.page, pagging.page_size)
+    
+    for post in result["posts"]:
+        post["comentarios"] = []
+        post["autor"] = utils.select_where(database, post["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+        comentarios = utils.select_where(database, post["id"], "post_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
+        
+        if comentarios:
+            for comentario in comentarios["comentarios"]:
+                comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+                post["comentarios"].append(comentario)
+
+    return JSONResponse(content=result, headers=headers)
+
+
+@app.get("/pesquisar/usuarios/{search_term}")
+async def search_users(search_term: str, pagging: classes.Paging):
+    result = utils.search(database, ["id", "apelido", "link_avatar"], "usuarios", search_term, "apelido", pagging.page, pagging.page_size)
+
+    return JSONResponse(content=result, headers=headers)

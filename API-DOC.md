@@ -251,6 +251,25 @@ Endpoint de comentários.
 | --- | --- | --- | --- | --- |
 | POST | ```mensagem_id``` | - | ```status: ok```| - |
 
+### 3.3.5 /pesquisar
+
+Esse endpoint não é aceito na raiz
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| - | - | - |- | - |
+
+#### 3.3.5.1 /pesquisar/posts/search_term
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```search_term``` | ```page: int```, ```page_size: int``` | Lista de posts correspondente a pesquisa | - |
+
+#### 3.3.5.2 /pesquisar/usuarios/search_term
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```search_term``` | ```page: int```, ```page_size: int``` | Lista de usuarios correspondente a pesquisa | - |
 
 # 4 - Status codes
 
