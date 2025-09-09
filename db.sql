@@ -1,6 +1,6 @@
 -- --------------------------------------------------------
--- Servidor:                     127.0.0.1
--- Versão do servidor:           PostgreSQL 17.6 (Debian 17.6-1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.3.0-5) 14.3.0, 64-bit
+-- Servidor:                     192.168.1.200
+-- Versão do servidor:           PostgreSQL 17.6 (Debian 17.6-0+deb13u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
 -- OS do Servidor:               
 -- HeidiSQL Versão:              12.11.0.7065
 -- --------------------------------------------------------
@@ -22,9 +22,26 @@ CREATE TABLE IF NOT EXISTS "usuarios" (
 	"link_avatar" TEXT NOT NULL,
 	"biografia" TEXT NULL DEFAULT NULL,
 	"deletado" BOOLEAN NOT NULL DEFAULT false,
+	"assinatura" VARCHAR(128) NULL DEFAULT NULL,
 	PRIMARY KEY ("id"),
 	UNIQUE ("apelido")
 );
+
+-- Exportação de dados foi desmarcado.
+
+-- Copiando estrutura para tabela public.mensagens
+CREATE TABLE IF NOT EXISTS "mensagens" (
+	"id" SERIAL NOT NULL,
+	"autor_id" INTEGER NOT NULL,
+	"mensagem" TEXT NOT NULL,
+	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
+	"deletado" BOOLEAN NOT NULL DEFAULT false,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "mensagens_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+CREATE INDEX "idx_mensagens_autor_id" ON "mensagens" ("autor_id");
+
+-- Exportação de dados foi desmarcado.
 
 -- Copiando estrutura para tabela public.posts
 CREATE TABLE IF NOT EXISTS "posts" (
@@ -38,6 +55,8 @@ CREATE TABLE IF NOT EXISTS "posts" (
 	CONSTRAINT "posts_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 CREATE INDEX "idx_posts_autor_id" ON "posts" ("autor_id");
+
+-- Exportação de dados foi desmarcado.
 
 -- Copiando estrutura para tabela public.comentarios
 CREATE TABLE IF NOT EXISTS "comentarios" (
@@ -55,18 +74,6 @@ CREATE INDEX "idx_comentarios_post_id" ON "comentarios" ("post_id");
 CREATE INDEX "idx_comentarios_autor_id" ON "comentarios" ("autor_id");
 
 -- Exportação de dados foi desmarcado.
-
--- Copiando estrutura para tabela public.mensagens
-CREATE TABLE IF NOT EXISTS "mensagens" (
-	"id" SERIAL NOT NULL,
-	"autor_id" INTEGER NOT NULL,
-	"mensagem" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
-	"deletado" BOOLEAN NOT NULL DEFAULT false,
-	PRIMARY KEY ("id"),
-	CONSTRAINT "mensagens_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-CREATE INDEX "idx_mensagens_autor_id" ON "mensagens" ("autor_id");
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

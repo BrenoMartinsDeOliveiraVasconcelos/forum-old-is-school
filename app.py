@@ -77,6 +77,12 @@ async def create_user(user: classes.UserCreate):
 @app.post("/posts")
 async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     autor_id = utils.get_user_id(database, current_user_apelido)
+    assinatura = utils.select_where(database, autor_id, "id", "usuarios", ["assinatura"])["usuarios"][0]["assinatura"]
+
+    print(assinatura)
+
+    if assinatura:
+        info.conteudo += "\n\n" + assinatura
     
     result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo"], [autor_id, info.titulo, info.conteudo], "id")
 
@@ -88,7 +94,11 @@ async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Dep
 @app.post("/comentarios")
 async def comment(info: classes.Comment, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     autor_id = utils.get_user_id(database, current_user_apelido)
-    
+    assinatura = utils.select_where(database, autor_id, "id", "usuarios", ["assinatura"])["usuarios"][0]["assinatura"]
+
+    if assinatura:
+        info.conteudo += "\n\n" + assinatura
+
     utils.check_existence(database, "posts", "id", str(info.post_id))
 
     result = utils.insert_into(database, "comentarios", ["autor_id", "post_id", "conteudo"], [autor_id, info.post_id, info.conteudo], "id")
@@ -330,6 +340,16 @@ async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = f
     utils.get_user_id(database, current_user_apelido)
 
     utils.update_data(database, "usuarios", "biografia", "id", str(user_id), str(bio.texto))    
+
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
+
+
+@app.post("/usuarios/{user_id}/editar/assinatura")
+async def edit_signature(signature: classes.Signature, user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    utils.get_user_id(database, current_user_apelido)
+
+    utils.update_data(database, "usuarios", "assinatura", "id", str(user_id), str(signature.assinatura))    
 
     j = {"status": "OK"}
     return JSONResponse(content=j, headers=headers)

@@ -31,3 +31,7 @@ class Bio(pydantic.BaseModel):
 class Paging(pydantic.BaseModel):
     page: int
     page_size: int
+
+
+class Signature(pydantic.BaseModel):
+    assinatura: str

@@ -177,6 +177,12 @@ Esse endpoint é relacionado manipulação e obteção de dados de usuários.
 | --- | --- | --- | --- | --- |
 | POST | ```user_id``` | ```biografia``` | ```status: ok```| - |
 
+##### 3.3.1.2.2 /usuarios/user_id/editar/assinatura
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```user_id``` | ```assinatura``` | ```status: ok```| - |
+
 
 #### 3.3.1.3 /usuarios/user_id/deletar
 
