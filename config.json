@@ -6,6 +6,6 @@
     },
     "app": {
         "text_on_deletion": "Excluído",
-        "data_path": "/home/breno/data/ssd/server"
+        "data_path": "./data"
     }
 }
