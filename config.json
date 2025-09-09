@@ -5,6 +5,7 @@
         "port": 5432
     },
     "app": {
-        "text_on_deletion": "Excluído"
+        "text_on_deletion": "Excluído",
+        "data_path": "/home/breno/data/ssd/server"
     }
 }

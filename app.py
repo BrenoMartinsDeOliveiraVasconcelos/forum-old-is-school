@@ -1,11 +1,12 @@
 import json
 import fastapi
+from fastapi import File, UploadFile
 import os
 import utils
 import classes
 import auth
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from datetime import timedelta
 
 postgree_user = os.getenv("P_USER")
@@ -29,6 +30,17 @@ app = fastapi.FastAPI(
 )
 
 headers = {"Access-Control-Allow-Origin": "*"}
+
+
+# Image folder
+absoulute_path = app_conifg["data_path"]
+image_folder = os.path.join(absoulute_path, "images")
+avatar_folder = os.path.join(image_folder, "avatars")
+os.makedirs(image_folder, exist_ok=True)
+os.makedirs(avatar_folder, exist_ok=True)
+
+
+supported_image_types = ["jpg", "jpeg", "png", "gif"]
 
 
 @app.get("/")
@@ -67,7 +79,7 @@ async def create_user(user: classes.UserCreate):
 
     password_hash = utils.generate_hash(user.senha)
     
-    result = utils.insert_into(database, "usuarios", ["apelido", "link_avatar", "hash_senha"], [user.apelido, str(user.link_avatar), password_hash], "id")
+    result = utils.insert_into(database, "usuarios", ["apelido", "hash_senha"], [user.apelido, password_hash], "id")
 
     j = {"user_id": result[0]}
 
@@ -124,11 +136,11 @@ async def send_message(info: classes.SendMessage, current_user_apelido: str = fa
 
 @app.get("/usuarios")
 async def get_users(paging: classes.Paging):
-    #j = utils.select_all(database, ["id", "apelido", "link_avatar", "deletado"], "usuarios", paging.page, paging.page_size)
+    #j = utils.select_all(database, ["id", "apelido", "avatar_filename", "deletado"], "usuarios", paging.page, paging.page_size)
     
     j = utils.select_all(
         database,
-        ["id", "apelido", "link_avatar", "deletado"],
+        ["id", "apelido", "avatar_filename", "assinatura", "deletado"],
         "usuarios",
         paging.page,
         paging.page_size
@@ -209,7 +221,7 @@ async def get_post(post_id: int):
 async def get_user_content(user_id: int, paging: classes.Paging):
     str_user_id = str(user_id)
 
-    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "link_avatar"], True)
+    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "avatar_filename", "assinatura"], True)
     
 
     for user in users["usuarios"]:
@@ -326,12 +338,26 @@ async def get_user_messages(user_id: int, paging: classes.Paging):
 # Edição de perfil e afins
 
 @app.post("/usuarios/{user_id}/editar/avatar")
-async def edit_avatar(link_avatar: classes.Avatar, user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+async def edit_avatar(user_id: int, file: UploadFile, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+
+    file_tp = file.content_type.split("/")[1]
+
+    # Baixar avatar do body do request
+    if file_tp not in supported_image_types:
+        raise fastapi.HTTPException(status_code=400, detail="Arquivo nao e uma imagem")
+    
+    avatar_filename = os.path.join(avatar_folder, str(user_id) + "." + file_tp)
+
+    with open(avatar_filename, "wb+") as f:
+        f.write(file.file.read())
+
+    avatar_filename_wo_path = avatar_filename.split("/")[-1]
+
     utils.get_user_id(database, current_user_apelido)
-    utils.update_data(database, "usuarios", "link_avatar", "id", str(user_id), str(link_avatar.link_avatar))    
+    utils.update_data(database, "usuarios", "avatar_filename", "id", str(user_id), avatar_filename_wo_path)    
 
     
-    j = {"status": "OK"}
+    j = {"avatar_filename": avatar_filename_wo_path}
     return JSONResponse(content=j, headers=headers)
 
 
@@ -362,7 +388,7 @@ async def delete_user(user_id: int, current_user_apelido: str = fastapi.Depends(
 
     proccess = [utils.update_data(database, "usuarios", "apelido", "id", str(user_id), deletion),
                 utils.update_data(database, "usuarios", "hash_senha", "id", str(user_id), deletion),
-                utils.update_data(database, "usuarios", "link_avatar", "id", str(user_id),deletion),
+                utils.update_data(database, "usuarios", "avatar_filename", "id", str(user_id),deletion),
                 utils.update_data(database, "usuarios", "biografia", "id", str(user_id), deletion),
                 utils.update_data(database, "usuarios", "deletado", "id", str(user_id), "true")]
 
@@ -478,6 +504,13 @@ async def search_posts(search_term: str, pagging: classes.Paging):
 
 @app.get("/pesquisar/usuarios/{search_term}")
 async def search_users(search_term: str, pagging: classes.Paging):
-    result = utils.search(database, ["id", "apelido", "link_avatar"], "usuarios", search_term, "apelido", pagging.page, pagging.page_size)
+    result = utils.search(database, ["id", "apelido", "avatar_filename"], "usuarios", search_term, "apelido", pagging.page, pagging.page_size)
 
     return JSONResponse(content=result, headers=headers)
+
+
+# Conseguir artquivos de mídia
+
+@app.get("/arquivos/avatares/{filename}")
+async def get_media(filename: str):
+    return FileResponse(f"{avatar_folder}/{filename}")

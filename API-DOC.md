@@ -133,7 +133,7 @@ Esse endpoint é relacionado manipulação e obteção de dados de usuários.
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | GET | - | ```page: int```, ```page_size: int``` | Lista de usuários | - |
-| POST | - | ```apelido```, ```link_avatar```, ```senha``` | ```user_id``` | - |
+| POST | - | ```apelido```, ```senha``` | ```user_id``` | - |
 
 #### 3.3.1.1 /usuarios/user_id
 
@@ -167,9 +167,10 @@ Esse endpoint é relacionado manipulação e obteção de dados de usuários.
 
 ##### 3.3.1.2.1 /usuarios/user_id/editar/avatar
 
+
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| POST | ```user_id``` | ```link_avatar``` | ```status: ok```| - |
+| POST | ```user_id``` | ```file``` |Um status OK junto ao nome do arquivo | Body tem Content-Type multipart/form-data |
 
 ##### 3.3.1.2.2 /usuarios/user_id/editar/biografia
 
@@ -276,6 +277,17 @@ Esse endpoint não é aceito na raiz
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | GET | ```search_term``` | ```page: int```, ```page_size: int``` | Lista de usuarios correspondente a pesquisa | - |
+
+
+### 3.3.6 /arquivos
+
+Esse endpoint é responsável por pegar arquivos de mídia do servidor. Só recebe métodos GET
+
+#### 3.3.6.1 /arquivos/avatares/arquivo
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| GET | ```arquivo``` | - | O arquivo em questão | - |
 
 # 4 - Status codes
 
