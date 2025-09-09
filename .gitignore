@@ -212,4 +212,4 @@ __marimo__/
 *env
 start.sh
 images
-config.json
+*.json
