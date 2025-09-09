@@ -52,7 +52,7 @@ Execute as instruções no arquivo db.sql no usuário especificado no banco ```p
 
 ## 2.3 Configurar o arquivo config.json
 
-Preencha o arquivo config.json com as configurações feitas na hora da instalação. Por padrão, as configurações são assim:
+Preencha o arquivo config.json com as configurações feitas na hora da instalação. Aqui está um exemplo de um JSON funcional com base nas configuraçõe padrão.
 ```json
 {
     "database": {
@@ -61,7 +61,8 @@ Preencha o arquivo config.json com as configurações feitas na hora da instala�
         "port": 5432
     },
     "app": {
-        "text_on_deletion": "Excluído"
+        "text_on_deletion": "Excluído",
+        "data_path": "./data"
     }
 }
 ```
