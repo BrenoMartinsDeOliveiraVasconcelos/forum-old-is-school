@@ -518,6 +518,18 @@ async def delete_message(message_id: int, current_user_apelido: str = fastapi.De
 
 # Search
 
+
+@app.post("/categorias/{catogry_id}/deletar")
+async def delete_category(catogry_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    utils.check_privileges(database, utils.get_user_id(database, current_user_apelido))
+    utils.check_existence(database, "categorias", "id", str(catogry_id))
+    
+    utils.update_data(database, "categorias", "deletado", "id", str(catogry_id), "true")
+
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
+
+
 @app.get("/pesquisar/posts/{search_term}")
 async def search_posts(search_term: str, pagging: classes.Paging):
     result = utils.search(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts", search_term, "titulo", pagging.page, pagging.page_size)
