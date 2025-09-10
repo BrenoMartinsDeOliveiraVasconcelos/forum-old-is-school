@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict K2TVbi5VLeaolr8XvbKlpUUjHD1rezIVGKOYGrWYNhnyNRE0RypM5FWdy4pKuNc
+\restrict pZ802UBYIOlwiFNjEwSGZfNNzvesNkI6gB5pV0TXAMEHNAeOcpZXSeIsItF91yU
 
 -- Dumped from database version 17.6 (Debian 17.6-0+deb13u1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-0+deb13u1)
@@ -106,7 +106,7 @@ CREATE TABLE public.curtidas_comentarios (
     id integer NOT NULL,
     autor_id integer NOT NULL,
     comentario_id integer NOT NULL,
-    deletado boolean NOT NULL,
+    deletado boolean DEFAULT false NOT NULL,
     "timestamp" timestamp without time zone DEFAULT now() NOT NULL
 );
 
@@ -515,5 +515,5 @@ ALTER TABLE ONLY public.posts
 -- PostgreSQL database dump complete
 --
 
-\unrestrict K2TVbi5VLeaolr8XvbKlpUUjHD1rezIVGKOYGrWYNhnyNRE0RypM5FWdy4pKuNc
+\unrestrict pZ802UBYIOlwiFNjEwSGZfNNzvesNkI6gB5pV0TXAMEHNAeOcpZXSeIsItF91yU
 

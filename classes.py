@@ -49,3 +49,8 @@ class Category(pydantic.BaseModel):
 class Like(pydantic.BaseModel):
     resource_type: str
     resource_id: int
+
+
+class LikePaging(Like):
+    page: int
+    page_size: int
