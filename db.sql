@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict FnvIDzZsfNMD0HtxXfEumfWNvLc6yzaHya2PDsnKiCIJ7yVf5ZMMI4cp4WBsnGc
+\restrict FUxrUJEmBU7x9kUh1CIVsJQhgpUSHvrewDhIucnawhPOpxRpQnFT95bIfvLlquP
 
 -- Dumped from database version 17.6 (Debian 17.6-0+deb13u1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-0+deb13u1)
@@ -33,7 +33,8 @@ CREATE TABLE public.categorias (
     "desc" character varying(128) NOT NULL,
     "timestamp" timestamp without time zone DEFAULT now() NOT NULL,
     deletado boolean DEFAULT false NOT NULL,
-    deletor_id integer
+    deletor_id integer,
+    autor_id integer NOT NULL
 );
 
 
@@ -455,6 +456,14 @@ ALTER TABLE ONLY public.curtidas_comentarios
 
 
 --
+-- Name: categorias autor_id_categorias_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categorias
+    ADD CONSTRAINT autor_id_categorias_fk FOREIGN KEY (autor_id) REFERENCES public.usuarios(id);
+
+
+--
 -- Name: curtidas_comentarios autor_id_curtidas_comentarios_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -578,5 +587,5 @@ ALTER TABLE ONLY public.posts
 -- PostgreSQL database dump complete
 --
 
-\unrestrict FnvIDzZsfNMD0HtxXfEumfWNvLc6yzaHya2PDsnKiCIJ7yVf5ZMMI4cp4WBsnGc
+\unrestrict FUxrUJEmBU7x9kUh1CIVsJQhgpUSHvrewDhIucnawhPOpxRpQnFT95bIfvLlquP
 

@@ -163,7 +163,7 @@ async def create_category(category: classes.Category, current_user_apelido: str 
     user_id = utils.get_user_id(database, current_user_apelido)
     utils.check_privileges(database, user_id)
 
-    result = utils.insert_into(database, "categorias", ["titulo", "desc"], [category.titulo, category.desc], "id")
+    result = utils.insert_into(database, "categorias", ["titulo", "desc", "autor_id"], [category.titulo, category.desc, user_id], "id")
     j = {"category_id": result[0]}
     return JSONResponse(content=j, headers=headers)
 
@@ -218,7 +218,11 @@ async def get_comments(paging: classes.Paging):
 
 @app.get("/categorias")
 async def get_categories(paging: classes.Paging):
-    categorias = utils.select_all(database, ["id", "titulo", "desc", "timestamp"], "categorias", paging.page, paging.page_size)
+    categorias = utils.select_all(database, ["id", "titulo", "desc", "autor_id", "timestamp"], "categorias", paging.page, paging.page_size)
+    
+    for c in categorias["categorias"]:
+        c["autor"] = helpers.get_user_data(database, c["autor_id"])
+    
     return JSONResponse(content=categorias, headers=headers)
 
 # Posts por id
