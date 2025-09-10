@@ -6,6 +6,7 @@ import utils
 import helpers
 import classes
 import auth
+import random
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, FileResponse
 from datetime import timedelta
@@ -418,21 +419,8 @@ async def edit_signature(signature: classes.Signature, user_id: int, current_use
 @app.post("/usuarios/{user_id}/deletar")
 async def delete_user(user_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     utils.get_user_id(database, current_user_apelido)
-
-    proccess = [utils.update_data(database, "usuarios", "apelido", "id", str(user_id), deletion),
-                utils.update_data(database, "usuarios", "hash_senha", "id", str(user_id), deletion),
-                utils.update_data(database, "usuarios", "avatar_filename", "id", str(user_id),deletion),
-                utils.update_data(database, "usuarios", "biografia", "id", str(user_id), deletion),
-                utils.update_data(database, "usuarios", "deletado", "id", str(user_id), "true")]
-
-    delete = True
-    for p in proccess:
-        if not p:
-            delete = False
-            break
-
-    if not delete:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    
+    helpers.update_multiple_data(database, "usuarios", ["apelido", "hash_senha", "avatar_filename", "biografia", "deletado", "admin", "deletor_id"], "id", str(user_id), [deletion+"_"+str(random.randint(1000000, 9999999)), deletion, deletion, deletion, "true", "false", str(user_id)])
     
     j = {"status": "Bye :("}
 
@@ -452,14 +440,7 @@ async def delete_post(post_id: int, current_user_apelido: str = fastapi.Depends(
     if post["autor_id"] != user_id:
         raise fastapi.HTTPException(status_code=401, detail="Nao autorizado")
     
-    proccess = [
-        utils.update_data(database, "posts", "titulo", "id", str(post_id), deletion),
-        utils.update_data(database, "posts", "conteudo", "id", str(post_id), deletion),
-        utils.update_data(database, "posts", "deletado", "id", str(post_id), "true"),
-    ]
-
-    if False in proccess:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    helpers.update_multiple_data(database, "posts", ["titulo", "conteudo", "deletado", "deletor_id"], "id", str(post_id), [deletion, deletion, "true", str(user_id)])
     
     j = {"status": "OK"}
 
@@ -479,13 +460,7 @@ async def delete_comment(comment_id: int, current_user_apelido: str = fastapi.De
     if comment["autor_id"] != user_id:
         raise fastapi.HTTPException(status_code=401, detail="Nao autorizado")
     
-    proccess = [
-        utils.update_data(database, "comentarios", "conteudo", "id", str(comment_id), deletion),
-        utils.update_data(database, "comentarios", "deletado", "id", str(comment_id), "true"),
-    ]
-
-    if False in proccess:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    helpers.update_multiple_data(database, "comentarios", ["conteudo", "deletado", "deletor_id"], "id", str(comment_id), [deletion, "true", str(user_id)])
     
     j = {"status": "OK"}
     return JSONResponse(content=j, headers=headers)
@@ -503,14 +478,8 @@ async def delete_message(message_id: int, current_user_apelido: str = fastapi.De
 
     if message["autor_id"] != logged_id:
         raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
-    
-    proccess = [
-        utils.update_data(database, "mensagens", "mensagem", "id", str(message_id), deletion),
-        utils.update_data(database, "mensagens", "deletado", "id", str(message_id), "true"),
-    ]
 
-    if False in proccess:
-        raise fastapi.HTTPException(status_code=500, detail="Erro interno")
+    helpers.update_multiple_data(database, "mensagens", ["mensagem", "deletado", "deletor_id"], "id", str(message_id), [deletion, "true", str(logged_id)])
     
     j = {"status": "OK"}
     return JSONResponse(content=j, headers=headers)
@@ -521,10 +490,12 @@ async def delete_message(message_id: int, current_user_apelido: str = fastapi.De
 
 @app.post("/categorias/{catogry_id}/deletar")
 async def delete_category(catogry_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
-    utils.check_privileges(database, utils.get_user_id(database, current_user_apelido))
+    user_id = utils.get_user_id(database, current_user_apelido)
+
+    utils.check_privileges(database, user_id)
     utils.check_existence(database, "categorias", "id", str(catogry_id))
     
-    utils.update_data(database, "categorias", "deletado", "id", str(catogry_id), "true")
+    helpers.update_multiple_data(database, "categorias", ["deletado", "deletor_id"], "id", str(catogry_id), ["true", str(user_id)])
 
     j = {"status": "OK"}
     return JSONResponse(content=j, headers=headers)

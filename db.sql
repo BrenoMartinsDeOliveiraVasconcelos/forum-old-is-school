@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 5pDHjFaEQ9zMtBnlqkGNLqQFzTUsK5zBYz1R02fHSo9uzYgOoNz4AdjHi1f6KX9
+\restrict FnvIDzZsfNMD0HtxXfEumfWNvLc6yzaHya2PDsnKiCIJ7yVf5ZMMI4cp4WBsnGc
 
 -- Dumped from database version 17.6 (Debian 17.6-0+deb13u1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-0+deb13u1)
@@ -32,7 +32,8 @@ CREATE TABLE public.categorias (
     titulo character varying(32) NOT NULL,
     "desc" character varying(128) NOT NULL,
     "timestamp" timestamp without time zone DEFAULT now() NOT NULL,
-    deletado boolean DEFAULT false NOT NULL
+    deletado boolean DEFAULT false NOT NULL,
+    deletor_id integer
 );
 
 
@@ -70,7 +71,8 @@ CREATE TABLE public.comentarios (
     post_id integer NOT NULL,
     conteudo text NOT NULL,
     "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
-    deletado boolean DEFAULT false NOT NULL
+    deletado boolean DEFAULT false NOT NULL,
+    deletor_id integer
 );
 
 
@@ -107,7 +109,8 @@ CREATE TABLE public.curtidas_comentarios (
     autor_id integer NOT NULL,
     comentario_id integer NOT NULL,
     deletado boolean DEFAULT false NOT NULL,
-    "timestamp" timestamp without time zone DEFAULT now() NOT NULL
+    "timestamp" timestamp without time zone DEFAULT now() NOT NULL,
+    deletor_id integer
 );
 
 
@@ -144,7 +147,8 @@ CREATE TABLE public.curtidas_posts (
     autor_id integer NOT NULL,
     post_id integer NOT NULL,
     deletado boolean DEFAULT false NOT NULL,
-    "timestamp" timestamp without time zone DEFAULT now() NOT NULL
+    "timestamp" timestamp without time zone DEFAULT now() NOT NULL,
+    deletor_id integer
 );
 
 
@@ -181,7 +185,8 @@ CREATE TABLE public.mensagens (
     autor_id integer NOT NULL,
     mensagem text NOT NULL,
     "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
-    deletado boolean DEFAULT false NOT NULL
+    deletado boolean DEFAULT false NOT NULL,
+    deletor_id integer
 );
 
 
@@ -222,7 +227,8 @@ CREATE TABLE public.posts (
     deletado boolean DEFAULT false NOT NULL,
     midia text,
     mural boolean DEFAULT false NOT NULL,
-    categoria_id integer
+    categoria_id integer,
+    deletor_id integer
 );
 
 
@@ -262,7 +268,8 @@ CREATE TABLE public.usuarios (
     biografia text,
     deletado boolean DEFAULT false NOT NULL,
     assinatura character varying(128),
-    admin boolean DEFAULT false NOT NULL
+    admin boolean DEFAULT false NOT NULL,
+    deletor_id integer
 );
 
 
@@ -440,6 +447,14 @@ CREATE INDEX idx_posts_autor_id ON public.posts USING btree (autor_id);
 
 
 --
+-- Name: curtidas_comentarios FK_curtidas_comentarios_usuarios; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_comentarios
+    ADD CONSTRAINT "FK_curtidas_comentarios_usuarios" FOREIGN KEY (deletor_id) REFERENCES public.usuarios(id);
+
+
+--
 -- Name: curtidas_comentarios autor_id_curtidas_comentarios_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -488,6 +503,54 @@ ALTER TABLE ONLY public.comentarios
 
 
 --
+-- Name: categorias deletor_id_categorias_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categorias
+    ADD CONSTRAINT deletor_id_categorias_fk FOREIGN KEY (deletor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: comentarios deletor_id_comentarios_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comentarios
+    ADD CONSTRAINT deletor_id_comentarios_fk FOREIGN KEY (deletor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: curtidas_posts deletor_id_curtidas_posts_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_posts
+    ADD CONSTRAINT deletor_id_curtidas_posts_fk FOREIGN KEY (deletor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: mensagens deletor_id_mensagens_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mensagens
+    ADD CONSTRAINT deletor_id_mensagens_fk FOREIGN KEY (deletor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: posts deletor_id_posts_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT deletor_id_posts_fk FOREIGN KEY (deletor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: usuarios deletor_id_usuarios_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usuarios
+    ADD CONSTRAINT deletor_id_usuarios_fk FOREIGN KEY (deletor_id) REFERENCES public.usuarios(id);
+
+
+--
 -- Name: mensagens mensagens_autor_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -515,5 +578,5 @@ ALTER TABLE ONLY public.posts
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 5pDHjFaEQ9zMtBnlqkGNLqQFzTUsK5zBYz1R02fHSo9uzYgOoNz4AdjHi1f6KX9
+\unrestrict FnvIDzZsfNMD0HtxXfEumfWNvLc6yzaHya2PDsnKiCIJ7yVf5ZMMI4cp4WBsnGc
 
