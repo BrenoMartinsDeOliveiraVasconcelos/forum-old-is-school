@@ -69,32 +69,29 @@ def select_all(
     if 'deletado' not in columns:
         columns.append('deletado')
 
+
     offset = (page - 1) * page_size
-    query_params = [page_size, offset]
 
-    query_part_1 = f"""
-        SELECT {', '.join(columns)} 
+    cursor = connection.cursor()
+    query = sql.SQL("""
+        SELECT {columns} 
         FROM {table} 
-        WHERE deletado = false"""
-    
-    if where:
-        query_part_1 += f" AND {condition_column} = %s"
-        query_params.insert(0, condition_value)
-
-        if condition_column == "" or condition_value == "":
-            raise fastapi.HTTPException(status_code=400, detail="Faltam parametros")
-
-    query_part_2 = """    
+        WHERE deletado = false {where_clause}
         ORDER BY id
         LIMIT %s OFFSET %s;
-    """
+    """).format(
+        columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
+        table=sql.Identifier(table),
+        where_clause=sql.SQL("AND {} = %s").format(sql.Identifier(condition_column)) if where else sql.SQL("")
+    )
 
-    query_full = query_part_1 + query_part_2
+    if where:
+        cursor.execute(query, (condition_value, page_size, offset))
+    else:
+        cursor.execute(query, (page_size, offset))
     
-    cursor = connection.cursor()
-    cursor.execute(query_full, tuple(query_params))
+    
     rows = cursor.fetchall()
-
     result = {table: []}
     col_names = [desc[0] for desc in cursor.description]
 
@@ -280,3 +277,10 @@ def search(
     return result
 
 
+def check_privileges(connection: psycopg2.extensions.connection, user_id: int):
+    result = select_where(connection, user_id, "id", "usuarios", ["admin"], True)
+
+    if not result["usuarios"][0]["admin"]:
+        raise fastapi.HTTPException(status_code=401, detail="Acesso negado.")
+    else:
+        return True

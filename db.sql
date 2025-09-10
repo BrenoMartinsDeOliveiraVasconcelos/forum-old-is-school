@@ -1,84 +1,383 @@
--- --------------------------------------------------------
--- Servidor:                     192.168.1.200
--- Versão do servidor:           PostgreSQL 17.6 (Debian 17.6-0+deb13u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
--- OS do Servidor:               
--- HeidiSQL Versão:              12.11.0.7065
--- --------------------------------------------------------
+--
+-- PostgreSQL database dump
+--
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES  */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+\restrict vbAvaqHixohyi6ZJJ0w9kiCFFtaxfD5eMk0Cc9b1MZnj3ToO8uLccQw0a93yJ26
 
--- Exportação de dados foi desmarcado.
+-- Dumped from database version 17.6 (Debian 17.6-0+deb13u1)
+-- Dumped by pg_dump version 17.6 (Debian 17.6-0+deb13u1)
 
--- Copiando estrutura para tabela public.usuarios
-CREATE TABLE IF NOT EXISTS "usuarios" (
-	"id" SERIAL NOT NULL,
-	"apelido" VARCHAR(16) NOT NULL,
-	"hash_senha" TEXT NOT NULL,
-	"avatar_filename" TEXT NULL DEFAULT NULL,
-	"biografia" TEXT NULL DEFAULT NULL,
-	"deletado" BOOLEAN NOT NULL DEFAULT false,
-	"assinatura" VARCHAR(128) NULL DEFAULT NULL,
-	PRIMARY KEY ("id"),
-	UNIQUE ("apelido")
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: categorias; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.categorias (
+    id integer NOT NULL,
+    titulo character varying(32) NOT NULL,
+    "desc" character varying(128) NOT NULL,
+    "timestamp" timestamp without time zone DEFAULT '2025-09-10 09:42:01.880035'::timestamp without time zone NOT NULL,
+    deletado boolean DEFAULT false NOT NULL
 );
 
--- Exportação de dados foi desmarcado.
 
--- Copiando estrutura para tabela public.posts
-CREATE TABLE IF NOT EXISTS "posts" (
-	"id" SERIAL NOT NULL,
-	"autor_id" INTEGER NOT NULL,
-	"titulo" VARCHAR(32) NOT NULL,
-	"conteudo" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
-	"deletado" BOOLEAN NOT NULL DEFAULT false,
-	"midia" TEXT NULL DEFAULT NULL,
-	PRIMARY KEY ("id"),
-	CONSTRAINT "posts_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+ALTER TABLE public.categorias OWNER TO postgres;
+
+--
+-- Name: categorias_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.categorias_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.categorias_id_seq OWNER TO postgres;
+
+--
+-- Name: categorias_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.categorias_id_seq OWNED BY public.categorias.id;
+
+
+--
+-- Name: comentarios; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.comentarios (
+    id integer NOT NULL,
+    autor_id integer NOT NULL,
+    post_id integer NOT NULL,
+    conteudo text NOT NULL,
+    "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
+    deletado boolean DEFAULT false NOT NULL
 );
-CREATE INDEX "idx_posts_autor_id" ON "posts" ("autor_id");
 
 
--- Copiando estrutura para tabela public.comentarios
-CREATE TABLE IF NOT EXISTS "comentarios" (
-	"id" SERIAL NOT NULL,
-	"autor_id" INTEGER NOT NULL,
-	"post_id" INTEGER NOT NULL,
-	"conteudo" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
-	"deletado" BOOLEAN NOT NULL DEFAULT false,
-	PRIMARY KEY ("id"),
-	CONSTRAINT "comentarios_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,
-	CONSTRAINT "comentarios_post_id_fk" FOREIGN KEY ("post_id") REFERENCES "posts" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+ALTER TABLE public.comentarios OWNER TO postgres;
+
+--
+-- Name: comentarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.comentarios_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.comentarios_id_seq OWNER TO postgres;
+
+--
+-- Name: comentarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.comentarios_id_seq OWNED BY public.comentarios.id;
+
+
+--
+-- Name: mensagens; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.mensagens (
+    id integer NOT NULL,
+    autor_id integer NOT NULL,
+    mensagem text NOT NULL,
+    "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
+    deletado boolean DEFAULT false NOT NULL
 );
-CREATE INDEX "idx_comentarios_post_id" ON "comentarios" ("post_id");
-CREATE INDEX "idx_comentarios_autor_id" ON "comentarios" ("autor_id");
 
--- Exportação de dados foi desmarcado.
 
--- Copiando estrutura para tabela public.mensagens
-CREATE TABLE IF NOT EXISTS "mensagens" (
-	"id" SERIAL NOT NULL,
-	"autor_id" INTEGER NOT NULL,
-	"mensagem" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
-	"deletado" BOOLEAN NOT NULL DEFAULT false,
-	PRIMARY KEY ("id"),
-	CONSTRAINT "mensagens_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+ALTER TABLE public.mensagens OWNER TO postgres;
+
+--
+-- Name: mensagens_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.mensagens_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.mensagens_id_seq OWNER TO postgres;
+
+--
+-- Name: mensagens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.mensagens_id_seq OWNED BY public.mensagens.id;
+
+
+--
+-- Name: posts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.posts (
+    id integer NOT NULL,
+    autor_id integer NOT NULL,
+    titulo character varying(32) NOT NULL,
+    conteudo text NOT NULL,
+    "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
+    deletado boolean DEFAULT false NOT NULL,
+    midia text,
+    mural boolean DEFAULT false NOT NULL,
+    categoria_id integer
 );
-CREATE INDEX "idx_mensagens_autor_id" ON "mensagens" ("autor_id");
 
 
--- Exportação de dados foi desmarcado.
+ALTER TABLE public.posts OWNER TO postgres;
 
-/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+--
+-- Name: posts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.posts_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.posts_id_seq OWNER TO postgres;
+
+--
+-- Name: posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
+
+
+--
+-- Name: usuarios; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.usuarios (
+    id integer NOT NULL,
+    apelido character varying(16) NOT NULL,
+    hash_senha text NOT NULL,
+    avatar_filename text,
+    biografia text,
+    deletado boolean DEFAULT false NOT NULL,
+    assinatura character varying(128),
+    admin boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.usuarios OWNER TO postgres;
+
+--
+-- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.usuarios_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.usuarios_id_seq OWNER TO postgres;
+
+--
+-- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.usuarios.id;
+
+
+--
+-- Name: categorias id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categorias ALTER COLUMN id SET DEFAULT nextval('public.categorias_id_seq'::regclass);
+
+
+--
+-- Name: comentarios id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comentarios ALTER COLUMN id SET DEFAULT nextval('public.comentarios_id_seq'::regclass);
+
+
+--
+-- Name: mensagens id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mensagens ALTER COLUMN id SET DEFAULT nextval('public.mensagens_id_seq'::regclass);
+
+
+--
+-- Name: posts id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.posts ALTER COLUMN id SET DEFAULT nextval('public.posts_id_seq'::regclass);
+
+
+--
+-- Name: usuarios id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usuarios ALTER COLUMN id SET DEFAULT nextval('public.usuarios_id_seq'::regclass);
+
+
+--
+-- Name: categorias categorias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categorias
+    ADD CONSTRAINT categorias_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: categorias categorias_titulo_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categorias
+    ADD CONSTRAINT categorias_titulo_key UNIQUE (titulo);
+
+
+--
+-- Name: comentarios comentarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comentarios
+    ADD CONSTRAINT comentarios_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mensagens mensagens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mensagens
+    ADD CONSTRAINT mensagens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: usuarios usuarios_apelido_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usuarios
+    ADD CONSTRAINT usuarios_apelido_key UNIQUE (apelido);
+
+
+--
+-- Name: usuarios usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usuarios
+    ADD CONSTRAINT usuarios_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_comentarios_autor_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_comentarios_autor_id ON public.comentarios USING btree (autor_id);
+
+
+--
+-- Name: idx_comentarios_post_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_comentarios_post_id ON public.comentarios USING btree (post_id);
+
+
+--
+-- Name: idx_mensagens_autor_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mensagens_autor_id ON public.mensagens USING btree (autor_id);
+
+
+--
+-- Name: idx_posts_autor_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_posts_autor_id ON public.posts USING btree (autor_id);
+
+
+--
+-- Name: posts categoria_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT categoria_id_fk FOREIGN KEY (categoria_id) REFERENCES public.categorias(id);
+
+
+--
+-- Name: comentarios comentarios_autor_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comentarios
+    ADD CONSTRAINT comentarios_autor_id_fk FOREIGN KEY (autor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: comentarios comentarios_post_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comentarios
+    ADD CONSTRAINT comentarios_post_id_fk FOREIGN KEY (post_id) REFERENCES public.posts(id);
+
+
+--
+-- Name: mensagens mensagens_autor_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mensagens
+    ADD CONSTRAINT mensagens_autor_id_fk FOREIGN KEY (autor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: posts posts_autor_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT posts_autor_id_fk FOREIGN KEY (autor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict vbAvaqHixohyi6ZJJ0w9kiCFFtaxfD5eMk0Cc9b1MZnj3ToO8uLccQw0a93yJ26
+

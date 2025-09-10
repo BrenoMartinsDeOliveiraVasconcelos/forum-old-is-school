@@ -98,8 +98,10 @@ async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Dep
 
     if assinatura:
         info.conteudo += "\n\n" + assinatura
+
+    utils.check_existence(database, "categorias", "id", str(info.categoria_id))
     
-    result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo"], [autor_id, info.titulo, info.conteudo], "id")
+    result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo", "categoria_id"], [autor_id, info.titulo, info.conteudo, info.categoria_id], "id")
 
     j = {"post_id": result[0]}
 
@@ -117,7 +119,7 @@ async def publish_with_media(titulo: str, conteudo: str, file: UploadFile = File
     with open(caminho_arquivo, "wb+") as buffer:
         buffer.write(file.file.read())
 
-    result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo", "midia"], [autor_id, titulo, conteudo, file.filename], "id")
+    result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo", "midia", "mural"], [autor_id, titulo, conteudo, file.filename, "true"], "id")
 
     j = {"post_id": result[0]}
 
@@ -151,7 +153,17 @@ async def send_message(info: classes.SendMessage, current_user_apelido: str = fa
     j = {"message_id": result[0]}
     return JSONResponse(content=j, headers=headers)
 
-    
+
+
+@app.post("/categorias")
+async def create_category(category: classes.Category, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    user_id = utils.get_user_id(database, current_user_apelido)
+    utils.check_privileges(database, user_id)
+
+    result = utils.insert_into(database, "categorias", ["titulo", "desc"], [category.titulo, category.desc], "id")
+    j = {"category_id": result[0]}
+    return JSONResponse(content=j, headers=headers)
+
 
 # Métodos GET que pegam todos de cada categoria
 
@@ -161,7 +173,7 @@ async def get_users(paging: classes.Paging):
     
     j = utils.select_all(
         database,
-        ["id", "apelido", "avatar_filename", "assinatura", "deletado"],
+        ["id", "apelido", "avatar_filename", "assinatura", "admin", "deletado"],
         "usuarios",
         paging.page,
         paging.page_size
@@ -170,8 +182,8 @@ async def get_users(paging: classes.Paging):
 
 
 @app.get("/posts")
-async def get_posts(paging: classes.Paging):
-    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "midia", "timestamp"], "posts", paging.page, paging.page_size)
+async def get_posts(paging: classes.PagingPosts):
+    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"], "posts", paging.page, paging.page_size, where=True, condition_column="categoria_id", condition_value=str(paging.categoria_id))
 
     for post in posts["posts"]:
         post["comentarios"] = []
@@ -208,10 +220,16 @@ async def get_comments(paging: classes.Paging):
         comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
     return JSONResponse(content=comentarios, headers=headers)
 
+
+@app.get("/categorias")
+async def get_categories(paging: classes.Paging):
+    categorias = utils.select_all(database, ["id", "titulo", "desc", "timestamp"], "categorias", paging.page, paging.page_size)
+    return JSONResponse(content=categorias, headers=headers)
+
 # Posts por id
 @app.get("/posts/{post_id}")
 async def get_post(post_id: int):
-    posts = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "midia", "timestamp"], True)
+    posts = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"], True)
     
     
     for post in posts["posts"]:
@@ -242,13 +260,13 @@ async def get_post(post_id: int):
 async def get_user_content(user_id: int, paging: classes.Paging):
     str_user_id = str(user_id)
 
-    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "avatar_filename", "assinatura"], True)
+    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "avatar_filename", "assinatura", "admin"], True)
     
 
     for user in users["usuarios"]:
         user["posts"] = utils.select_all(
             connection=database,
-            columns=["id", "autor_id", "titulo", "conteudo", "midia", "timestamp"],
+            columns=["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"],
             table="posts",
             page=paging.page,
             page_size=paging.page_size,
@@ -311,7 +329,7 @@ async def get_user_posts(user_id: int, paging: classes.Paging):
     #j = utils.select_where(database, str(user_id), "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
     j = utils.select_all(
         connection=database,
-        columns=["id", "autor_id", "titulo", "conteudo", "timestamp"],
+        columns=["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"],
         table="posts",
         page=paging.page,
         page_size=paging.page_size,

@@ -112,6 +112,8 @@ Para isso, basta fazer um POST para ```127.0.0.1:9090/usuarios```. Coloque em ``
 }
 ```
 
+OBS: Alguns endpoints necessitam de privilegios de administrador. Abra o banco de dados e defina o usuário que acabou de criar como true na coluna "admin" em "usuarios".
+
 ## 3.2 Conseguir token de autenticação
 
 Para conseguir o token de autenticação, basta fazer um POST para ```127.0.0.1:9090/token```. Coloque em ```body``` algo como abaixo, além de definir ```Content-Type``` como ```application/x-www-form-urlencoded```.
@@ -199,8 +201,8 @@ Endpoint relacionado a posts. Possui uma quanitdade menor de chamdas em relaçã
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | ```page: int```, ```page_size: int``` | Lista de posts | - |
-| POST | - | ```titulo```, ```conteudo``` | ```status: ok```| - |
+| GET | - | ```page: int```, ```page_size: int```, ```categoria_id: int``` | Lista de posts | - |
+| POST | - | ```titulo```, ```conteudo```, ```categoria_id: int``` | ```status: ok```| - |
 
 
 #### 3.3.2.1 /posts/post_id

@@ -8,6 +8,7 @@ class UserCreate(pydantic.BaseModel):
 class Publish(pydantic.BaseModel):
     titulo: str
     conteudo: str
+    categoria_id: int
 
 
 class Comment(pydantic.BaseModel):
@@ -32,5 +33,14 @@ class Paging(pydantic.BaseModel):
     page_size: int
 
 
+class PagingPosts(Paging):
+    categoria_id: int
+
+
 class Signature(pydantic.BaseModel):
     assinatura: str
+
+
+class Category(pydantic.BaseModel):
+    titulo: str
+    desc: str
