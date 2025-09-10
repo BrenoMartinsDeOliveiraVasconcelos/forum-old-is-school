@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 3dfk2cXOvtOJgU1lgH0Ly5X96dyvjuTeuiX2M8OI3F0uvexDcEYrkCKndMhl0Nc
+\restrict K2TVbi5VLeaolr8XvbKlpUUjHD1rezIVGKOYGrWYNhnyNRE0RypM5FWdy4pKuNc
 
 -- Dumped from database version 17.6 (Debian 17.6-0+deb13u1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-0+deb13u1)
@@ -96,6 +96,80 @@ ALTER SEQUENCE public.comentarios_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.comentarios_id_seq OWNED BY public.comentarios.id;
+
+
+--
+-- Name: curtidas_comentarios; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.curtidas_comentarios (
+    id integer NOT NULL,
+    autor_id integer NOT NULL,
+    comentario_id integer NOT NULL,
+    deletado boolean NOT NULL,
+    "timestamp" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.curtidas_comentarios OWNER TO postgres;
+
+--
+-- Name: curtidas_comentarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.curtidas_comentarios_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.curtidas_comentarios_id_seq OWNER TO postgres;
+
+--
+-- Name: curtidas_comentarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.curtidas_comentarios_id_seq OWNED BY public.curtidas_comentarios.id;
+
+
+--
+-- Name: curtidas_posts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.curtidas_posts (
+    id integer NOT NULL,
+    autor_id integer NOT NULL,
+    post_id integer NOT NULL,
+    deletado boolean DEFAULT false NOT NULL,
+    "timestamp" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.curtidas_posts OWNER TO postgres;
+
+--
+-- Name: curtidas_posts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.curtidas_posts_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.curtidas_posts_id_seq OWNER TO postgres;
+
+--
+-- Name: curtidas_posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.curtidas_posts_id_seq OWNED BY public.curtidas_posts.id;
 
 
 --
@@ -231,6 +305,20 @@ ALTER TABLE ONLY public.comentarios ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: curtidas_comentarios id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_comentarios ALTER COLUMN id SET DEFAULT nextval('public.curtidas_comentarios_id_seq'::regclass);
+
+
+--
+-- Name: curtidas_posts id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_posts ALTER COLUMN id SET DEFAULT nextval('public.curtidas_posts_id_seq'::regclass);
+
+
+--
 -- Name: mensagens id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -273,6 +361,22 @@ ALTER TABLE ONLY public.categorias
 
 ALTER TABLE ONLY public.comentarios
     ADD CONSTRAINT comentarios_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: curtidas_comentarios curtidas_comentarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_comentarios
+    ADD CONSTRAINT curtidas_comentarios_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: curtidas_posts curtidas_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_posts
+    ADD CONSTRAINT curtidas_posts_pkey PRIMARY KEY (id);
 
 
 --
@@ -336,11 +440,35 @@ CREATE INDEX idx_posts_autor_id ON public.posts USING btree (autor_id);
 
 
 --
+-- Name: curtidas_comentarios autor_id_curtidas_comentarios_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_comentarios
+    ADD CONSTRAINT autor_id_curtidas_comentarios_fk FOREIGN KEY (autor_id) REFERENCES public.usuarios(id);
+
+
+--
+-- Name: curtidas_posts autor_id_curtidas_posts_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_posts
+    ADD CONSTRAINT autor_id_curtidas_posts_fk FOREIGN KEY (autor_id) REFERENCES public.usuarios(id);
+
+
+--
 -- Name: posts categoria_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT categoria_id_fk FOREIGN KEY (categoria_id) REFERENCES public.categorias(id);
+
+
+--
+-- Name: curtidas_comentarios comentario_id_curtidas_comentarios_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_comentarios
+    ADD CONSTRAINT comentario_id_curtidas_comentarios_fk FOREIGN KEY (comentario_id) REFERENCES public.comentarios(id);
 
 
 --
@@ -368,6 +496,14 @@ ALTER TABLE ONLY public.mensagens
 
 
 --
+-- Name: curtidas_posts post_id_curtidas_posts_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curtidas_posts
+    ADD CONSTRAINT post_id_curtidas_posts_fk FOREIGN KEY (post_id) REFERENCES public.posts(id);
+
+
+--
 -- Name: posts posts_autor_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -379,5 +515,5 @@ ALTER TABLE ONLY public.posts
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 3dfk2cXOvtOJgU1lgH0Ly5X96dyvjuTeuiX2M8OI3F0uvexDcEYrkCKndMhl0Nc
+\unrestrict K2TVbi5VLeaolr8XvbKlpUUjHD1rezIVGKOYGrWYNhnyNRE0RypM5FWdy4pKuNc
 

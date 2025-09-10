@@ -557,3 +557,35 @@ async def get_media(filename: str):
 @app.get("/arquivos/mural/{filename}")
 async def get_media(filename: str):
     return FileResponse(f"{media_folder}/{filename}")
+
+
+# Curtidas
+
+@app.post("/curtir")
+async def like_post(like: classes.Like, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    user_id = utils.get_user_id(database, current_user_apelido)
+
+    supported_resources = {"posts": "post_id", "comentarios": "comentario_id"}
+
+    if like.resource_type not in [key for key in supported_resources.keys()]:
+        raise fastapi.HTTPException(status_code=400, detail="Recurso nao suportado")
+
+    utils.check_existence(database, like.resource_type, "id", str(like.resource_id))
+
+    # Checar se existe alguma entrada com resource_id e user_id
+    did_author_liked = False
+    likers = utils.select_where(database, str(like.resource_id), supported_resources[like.resource_type], f"curtidas_{like.resource_type}", ["autor_id"])
+
+    for liker in likers[f"curtidas_{like.resource_type}"]:
+        if liker["autor_id"] == user_id:
+            did_author_liked = True
+
+    if not did_author_liked:
+        utils.insert_into(database, f"curtidas_{like.resource_type}", ["autor_id", supported_resources[like.resource_type]], [user_id, like.resource_id], "id")
+    else:
+        # Marcar curtida como deletada
+        utils.update_data(database, f"curtidas_{like.resource_type}", "deletado", supported_resources[like.resource_type], str(like.resource_id), "true")
+
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
+    

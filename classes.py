@@ -44,3 +44,8 @@ class Signature(pydantic.BaseModel):
 class Category(pydantic.BaseModel):
     titulo: str
     desc: str
+
+
+class Like(pydantic.BaseModel):
+    resource_type: str
+    resource_id: int

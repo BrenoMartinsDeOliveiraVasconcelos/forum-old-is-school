@@ -191,11 +191,14 @@ def insert_into(connection: psycopg2.extensions.connection, table: str, columns:
     
 
 
-def check_existence(connection: psycopg2.extensions.connection, table: str, column: str, value: str):
+def check_existence(connection: psycopg2.extensions.connection, table: str, column: str, value: str, raise_on_notfound: bool = True):
     result = select_where(connection, value, column, table, ["id"])
 
     if not result:
-        raise fastapi.HTTPException(status_code=404, detail="Item nao encontrado")
+        if raise_on_notfound:
+            raise fastapi.HTTPException(status_code=404, detail="Item nao encontrado")
+        
+        return False
     else:
         return True
     
