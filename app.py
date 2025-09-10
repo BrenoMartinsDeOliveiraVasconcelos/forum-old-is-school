@@ -3,12 +3,13 @@ import fastapi
 from fastapi import UploadFile, Header, File
 import os
 import utils
+import helpers
 import classes
 import auth
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, FileResponse
 from datetime import timedelta
-from typing import Annotated
+
 
 postgree_user = os.getenv("P_USER")
 postgree_password = os.getenv("P_PASSWORD")
@@ -187,8 +188,7 @@ async def get_posts(paging: classes.PagingPosts):
     posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"], "posts", paging.page, paging.page_size, where=True, condition_column="categoria_id", condition_value=str(paging.categoria_id))
 
     for post in posts["posts"]:
-        post["comentarios"] = []
-        post["autor"] = utils.select_where(database, post["autor_id"], "id", "usuarios", ["apelido", "avatar_filename"])["usuarios"][0]
+        post["autor"] = helpers.get_user_data(database, post["autor_id"]) #utils.select_where(database, post["autor_id"], "id", "usuarios", ["apelido", "avatar_filename"])["usuarios"][0]
 
     return JSONResponse(content=posts, headers=headers)
 
@@ -198,7 +198,7 @@ async def get_messages(paging: classes.Paging):
     mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens", paging.page, paging.page_size)
     
     for mensagem in mensagens["mensagens"]:
-        mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["id", "apelido", "avatar_filename"])["usuarios"][0]
+        mensagem["autor"] = helpers.get_user_data(database, mensagem["autor_id"])
     k = mensagens
 
     return JSONResponse(content=mensagens, headers=headers)
@@ -211,7 +211,7 @@ async def get_comments(paging: classes.Paging):
 
     for comentario in comentarios["comentarios"]:
         comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
-        comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["id", "apelido", "avatar_filename"])["usuarios"][0]
+        comentario["autor"] = helpers.get_user_data(database, comentario["autor_id"])
     return JSONResponse(content=comentarios, headers=headers)
 
 
@@ -227,7 +227,7 @@ async def get_post(post_id: int):
     
     for post in posts["posts"]:
         post["comentarios"] = {"comentarios": []}
-        post["autor"] = utils.select_where(database, post["autor_id"], "id", "usuarios", ["id", "apelido", "avatar_filename"])["usuarios"][0]
+        post["autor"] = helpers.get_user_data(database, post["autor_id"])
         comentarios = utils.select_all(
             connection=database,
             columns=["id", "autor_id", "post_id", "conteudo", "timestamp"],
@@ -241,7 +241,7 @@ async def get_post(post_id: int):
 
         if comentarios:
             for comentario in comentarios["comentarios"]:
-                comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["id", "apelido", "avatar_filename"])["usuarios"][0]
+                comentario["autor"] = helpers.get_user_data(database, comentario["autor_id"])
                 post["comentarios"]["comentarios"].append(comentario)
 
         post["comentarios"]["page"] = comentarios["page"]
@@ -311,7 +311,7 @@ async def get_msg(mensagem_id: int):
     mensagens = utils.select_where(database, str(mensagem_id), "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"], True)
     
     for mensagem in mensagens["mensagens"]:
-        mensagem["autor"] = utils.select_where(database, mensagem["autor_id"], "id", "usuarios", ["id", "apelido", "avatar_filename"])["usuarios"][0]
+        mensagem["autor"] = helpers.get_user_data(database, mensagem["autor_id"])
 
     return JSONResponse(content=mensagens, headers=headers)
 
@@ -524,12 +524,12 @@ async def search_posts(search_term: str, pagging: classes.Paging):
     
     for post in result["posts"]:
         post["comentarios"] = []
-        post["autor"] = utils.select_where(database, post["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+        post["autor"] = helpers.get_user_data(database, post["autor_id"])
         comentarios = utils.select_where(database, post["id"], "post_id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
         
         if comentarios:
             for comentario in comentarios["comentarios"]:
-                comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+                comentario["autor"] = helpers.get_user_data(database, comentario["autor_id"])
                 post["comentarios"].append(comentario)
 
     return JSONResponse(content=result, headers=headers)
@@ -599,8 +599,8 @@ async def get_likes(like: classes.LikePaging):
     )
 
     num_likes = 0
-    for like in j[f"curtidas_{like.resource_type}"]:
-        like["autor"] = utils.select_where(database, like["autor_id"], "id", "usuarios", ["apelido"])["usuarios"][0]["apelido"]
+    for liker in j[f"curtidas_{like.resource_type}"]:
+        liker["autor"] = helpers.get_user_data(database, liker["autor_id"])
         num_likes += 1
 
     j["curtidas"] = num_likes
