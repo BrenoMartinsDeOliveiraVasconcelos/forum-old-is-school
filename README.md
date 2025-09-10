@@ -317,6 +317,21 @@ Endpoint responsável pelo sistema de likes.
 | POST | - | ```resource_type: 'posts' ou 'comentarios'```, ```resource_id: int``` | ```status: ok``` |
 | GET | - | ```resource_type: 'posts' ou 'comentarios'```, ```resource_id: int```, ```page: int```, ```page_size: int``` | Uma lista de curtidas | - |
 
+### 3.3.9 /categorias
+
+Endpoint de categorias de tópicos
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | - | ```titulo```, ```desc``` | ```category_id: int``` | - |
+| GET | - | ```page: int```, ```page_size: int``` | Uma lista de categorias | - |
+
+#### 3.3.9.1 /categorias/id_categoria/deletar
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | ```id_categoria``` | - | - | Precisa de permissões de administrador |
+
 # 4 - Status codes
 
 A API possui um sistema consistente de status code, retornando um códiggo HTTP de erro caso algo esteja errado.
