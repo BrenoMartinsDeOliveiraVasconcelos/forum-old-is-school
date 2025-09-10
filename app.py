@@ -171,7 +171,7 @@ async def get_users(paging: classes.Paging):
 
 @app.get("/posts")
 async def get_posts(paging: classes.Paging):
-    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts", paging.page, paging.page_size)
+    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "midia", "timestamp"], "posts", paging.page, paging.page_size)
 
     for post in posts["posts"]:
         post["comentarios"] = []
@@ -248,7 +248,7 @@ async def get_user_content(user_id: int, paging: classes.Paging):
     for user in users["usuarios"]:
         user["posts"] = utils.select_all(
             connection=database,
-            columns=["id", "autor_id", "titulo", "conteudo", "timestamp"],
+            columns=["id", "autor_id", "titulo", "conteudo", "midia", "timestamp"],
             table="posts",
             page=paging.page,
             page_size=paging.page_size,

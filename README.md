@@ -219,6 +219,8 @@ Endpoint relacionado a posts. Possui uma quanitdade menor de chamdas em relaçã
 
 ### 3.3.3 /mural
 
+Esse endpoint apenas recebe POST. Para conseguir uma lista de posts em formato de mural, faça uma GET para /posts
+
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | POST | - | ```file: arquivo```, ```titulo```, ```conteudo``` |Um status OK junto ao nome do arquivo | Body tem Content-Type multipart/form-data |
