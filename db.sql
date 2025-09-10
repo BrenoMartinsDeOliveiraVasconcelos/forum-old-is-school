@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict vbAvaqHixohyi6ZJJ0w9kiCFFtaxfD5eMk0Cc9b1MZnj3ToO8uLccQw0a93yJ26
+\restrict 3dfk2cXOvtOJgU1lgH0Ly5X96dyvjuTeuiX2M8OI3F0uvexDcEYrkCKndMhl0Nc
 
 -- Dumped from database version 17.6 (Debian 17.6-0+deb13u1)
 -- Dumped by pg_dump version 17.6 (Debian 17.6-0+deb13u1)
@@ -31,7 +31,7 @@ CREATE TABLE public.categorias (
     id integer NOT NULL,
     titulo character varying(32) NOT NULL,
     "desc" character varying(128) NOT NULL,
-    "timestamp" timestamp without time zone DEFAULT '2025-09-10 09:42:01.880035'::timestamp without time zone NOT NULL,
+    "timestamp" timestamp without time zone DEFAULT now() NOT NULL,
     deletado boolean DEFAULT false NOT NULL
 );
 
@@ -379,5 +379,5 @@ ALTER TABLE ONLY public.posts
 -- PostgreSQL database dump complete
 --
 
-\unrestrict vbAvaqHixohyi6ZJJ0w9kiCFFtaxfD5eMk0Cc9b1MZnj3ToO8uLccQw0a93yJ26
+\unrestrict 3dfk2cXOvtOJgU1lgH0Ly5X96dyvjuTeuiX2M8OI3F0uvexDcEYrkCKndMhl0Nc
 
