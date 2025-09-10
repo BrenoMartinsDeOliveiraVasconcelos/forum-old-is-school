@@ -13,33 +13,20 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+-- Exportação de dados foi desmarcado.
 
 -- Copiando estrutura para tabela public.usuarios
 CREATE TABLE IF NOT EXISTS "usuarios" (
 	"id" SERIAL NOT NULL,
 	"apelido" VARCHAR(16) NOT NULL,
 	"hash_senha" TEXT NOT NULL,
-	"link_avatar" TEXT NOT NULL,
+	"avatar_filename" TEXT NULL DEFAULT NULL,
 	"biografia" TEXT NULL DEFAULT NULL,
 	"deletado" BOOLEAN NOT NULL DEFAULT false,
 	"assinatura" VARCHAR(128) NULL DEFAULT NULL,
 	PRIMARY KEY ("id"),
 	UNIQUE ("apelido")
 );
-
--- Exportação de dados foi desmarcado.
-
--- Copiando estrutura para tabela public.mensagens
-CREATE TABLE IF NOT EXISTS "mensagens" (
-	"id" SERIAL NOT NULL,
-	"autor_id" INTEGER NOT NULL,
-	"mensagem" TEXT NOT NULL,
-	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
-	"deletado" BOOLEAN NOT NULL DEFAULT false,
-	PRIMARY KEY ("id"),
-	CONSTRAINT "mensagens_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-CREATE INDEX "idx_mensagens_autor_id" ON "mensagens" ("autor_id");
 
 -- Exportação de dados foi desmarcado.
 
@@ -51,12 +38,12 @@ CREATE TABLE IF NOT EXISTS "posts" (
 	"conteudo" TEXT NOT NULL,
 	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
 	"deletado" BOOLEAN NOT NULL DEFAULT false,
+	"midia" TEXT NULL DEFAULT NULL,
 	PRIMARY KEY ("id"),
 	CONSTRAINT "posts_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 CREATE INDEX "idx_posts_autor_id" ON "posts" ("autor_id");
 
--- Exportação de dados foi desmarcado.
 
 -- Copiando estrutura para tabela public.comentarios
 CREATE TABLE IF NOT EXISTS "comentarios" (
@@ -72,6 +59,21 @@ CREATE TABLE IF NOT EXISTS "comentarios" (
 );
 CREATE INDEX "idx_comentarios_post_id" ON "comentarios" ("post_id");
 CREATE INDEX "idx_comentarios_autor_id" ON "comentarios" ("autor_id");
+
+-- Exportação de dados foi desmarcado.
+
+-- Copiando estrutura para tabela public.mensagens
+CREATE TABLE IF NOT EXISTS "mensagens" (
+	"id" SERIAL NOT NULL,
+	"autor_id" INTEGER NOT NULL,
+	"mensagem" TEXT NOT NULL,
+	"timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
+	"deletado" BOOLEAN NOT NULL DEFAULT false,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "mensagens_autor_id_fk" FOREIGN KEY ("autor_id") REFERENCES "usuarios" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+CREATE INDEX "idx_mensagens_autor_id" ON "mensagens" ("autor_id");
+
 
 -- Exportação de dados foi desmarcado.
 
