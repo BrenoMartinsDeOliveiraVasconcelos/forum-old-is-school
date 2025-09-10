@@ -308,6 +308,14 @@ Esse endpoint é responsável por pegar arquivos de mídia do servidor. Só rece
 | --- | --- | --- | --- | --- |
 | GET | ```arquivo``` | - | O arquivo em questão | - |
 
+### 3.3.8 /curtidas
+
+Endpoint responsável pelo sistema de likes.
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | - | ```resource_type: 'posts' ou 'comentarios'```, ```resource_id: int``` | ```status: ok``` |
+| GET | - | ```resource_type: 'posts' ou 'comentarios'```, ```resource_id: int```, ```page: int```, ```page_size: int``` | Uma lista de curtidas | - |
 
 # 4 - Status codes
 
