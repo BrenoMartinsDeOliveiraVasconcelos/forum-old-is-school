@@ -1,6 +1,6 @@
 import json
 import fastapi
-from fastapi import File, UploadFile
+from fastapi import UploadFile, Header, File
 import os
 import utils
 import classes
@@ -8,6 +8,7 @@ import auth
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, FileResponse
 from datetime import timedelta
+from typing import Annotated
 
 postgree_user = os.getenv("P_USER")
 postgree_password = os.getenv("P_PASSWORD")
@@ -36,8 +37,10 @@ headers = {"Access-Control-Allow-Origin": "*"}
 absoulute_path = app_conifg["data_path"]
 image_folder = os.path.join(absoulute_path, "images")
 avatar_folder = os.path.join(image_folder, "avatars")
+media_folder = os.path.join(absoulute_path, "media")
 os.makedirs(image_folder, exist_ok=True)
 os.makedirs(avatar_folder, exist_ok=True)
+os.makedirs(media_folder, exist_ok=True)
 
 
 supported_image_types = ["jpg", "jpeg", "png", "gif"]
@@ -101,7 +104,25 @@ async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Dep
     j = {"post_id": result[0]}
 
     return JSONResponse(content=j, headers=headers)
-    
+
+@app.post("/mural")
+async def publish_with_media(titulo: str, conteudo: str, file: UploadFile = File(...), current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    autor_id = utils.get_user_id(database, current_user_apelido)
+    assinatura = utils.select_where(database, autor_id, "id", "usuarios", ["assinatura"])["usuarios"][0]["assinatura"]
+
+    if assinatura:
+        conteudo += "\n\n" + assinatura
+
+    caminho_arquivo = os.path.join(media_folder, file.filename)
+    with open(caminho_arquivo, "wb+") as buffer:
+        buffer.write(file.file.read())
+
+    result = utils.insert_into(database, "posts", ["autor_id", "titulo", "conteudo", "midia"], [autor_id, titulo, conteudo, file.filename], "id")
+
+    j = {"post_id": result[0]}
+
+    return JSONResponse(content=j, headers=headers)
+
 
 @app.post("/comentarios")
 async def comment(info: classes.Comment, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
@@ -190,7 +211,7 @@ async def get_comments(paging: classes.Paging):
 # Posts por id
 @app.get("/posts/{post_id}")
 async def get_post(post_id: int):
-    posts = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"], True)
+    posts = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "midia", "timestamp"], True)
     
     
     for post in posts["posts"]:
@@ -514,3 +535,7 @@ async def search_users(search_term: str, pagging: classes.Paging):
 @app.get("/arquivos/avatares/{filename}")
 async def get_media(filename: str):
     return FileResponse(f"{avatar_folder}/{filename}")
+
+@app.get("/arquivos/mural/{filename}")
+async def get_media(filename: str):
+    return FileResponse(f"{media_folder}/{filename}")
