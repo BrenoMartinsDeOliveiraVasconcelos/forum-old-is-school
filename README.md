@@ -332,6 +332,21 @@ Endpoint de categorias de tópicos
 | --- | --- | --- | --- | --- |
 | POST | ```id_categoria``` | - | - | Precisa de permissões de administrador |
 
+
+### 3.3.10 /mod
+
+Endpoint de moderação. É necessário ter privilégios de administrador para mandar POST
+
+Não recebe requests na raíz
+
+### 3.3.10.1 /mod/remover
+
+Remove ou tira remoção de posts, usuários, mensagens e comentários. 
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | - | ```resource_type: nome do endpoint (mural=posts)```, ```resource_id: int``` | ```status: ok``` | Precisa de permissões de administrador |
+
 # 4 - Status codes
 
 A API possui um sistema consistente de status code, retornando um códiggo HTTP de erro caso algo esteja errado.
