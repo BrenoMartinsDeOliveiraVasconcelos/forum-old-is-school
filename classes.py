@@ -54,3 +54,7 @@ class ResourceInfo(pydantic.BaseModel):
 class ResourcePaging(ResourceInfo):
     page: int
     page_size: int
+
+
+class UserInfo(pydantic.BaseModel):
+    user_id: int

@@ -339,13 +339,21 @@ Endpoint de moderação. É necessário ter privilégios de administrador para m
 
 Não recebe requests na raíz
 
-### 3.3.10.1 /mod/remover
+#### 3.3.10.1 /mod/remover
 
-Remove ou tira remoção de posts, usuários, mensagens e comentários. 
+Remove ou tira remoção de posts, usuários, mensagens e comentários invertendo o estado atual de deletado.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | POST | - | ```resource_type: nome do endpoint (mural=posts)```, ```resource_id: int``` | ```status: ok``` | Precisa de permissões de administrador |
+
+#### 3.3.10.2. /mod/privilegios
+
+Define se um usuario é admin ou não invertendo o estado atual.
+
+| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| --- | --- | --- | --- | --- |
+| POST | - | ```user_id: int``` | ```status: ok``` | Precisa de permissões de administrador |
 
 # 4 - Status codes
 

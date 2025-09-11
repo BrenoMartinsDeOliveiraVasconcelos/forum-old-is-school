@@ -606,7 +606,7 @@ async def delete_resource(resource_info: classes.ResourceInfo, current_user_apel
 
     deleted_bool = "true"
 
-    if utils.select_where(database, str(resource_info.resource_id), "id", resource_info.resource_type, ["deletado"], ignore_deleted=False)[resource_info.resource_type][0]["deletado"]:
+    if helpers.ge_boolean_status(database, resource_info): #utils.select_where(database, str(resource_info.resource_id), "id", resource_info.resource_type, ["deletado"], ignore_deleted=False)[resource_info.resource_type][0]["deletado"]:
         deleted_bool = "false"
 
     helpers.update_multiple_data(database, resource_info.resource_type, ["deletado", "deletor_id"], "id", str(resource_info.resource_id), [deleted_bool, str(user_id)])
@@ -614,3 +614,19 @@ async def delete_resource(resource_info: classes.ResourceInfo, current_user_apel
     j = {"status": "OK"}
     return JSONResponse(content=j, headers=headers)
 
+
+@app.post("/mod/privilegios")
+async def set_mod_permissions(user_info: classes.UserInfo, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    user_id = utils.get_user_id(database, current_user_apelido)
+
+    utils.check_privileges(database, user_id)
+    utils.check_existence(database, "usuarios", "id", str(user_info.user_id))
+
+    resource_info = classes.ResourceInfo(resource_type="usuarios", resource_id=user_info.user_id)
+
+    is_admin = helpers.get_boolean_status(database, resource_info, "admin")
+
+    utils.update_data(database, "usuarios", "admin", "id", str(user_info.user_id), not is_admin)
+
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
