@@ -46,11 +46,11 @@ class Category(pydantic.BaseModel):
     desc: str
 
 
-class Like(pydantic.BaseModel):
+class ResourceInfo(pydantic.BaseModel):
     resource_type: str
     resource_id: int
 
 
-class LikePaging(Like):
+class ResourcePaging(ResourceInfo):
     page: int
     page_size: int

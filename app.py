@@ -543,7 +543,7 @@ async def get_media(filename: str):
 # Curtidas
 
 @app.post("/curtidas")
-async def like_post(like: classes.Like, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+async def like_post(like: classes.ResourceInfo, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     user_id = utils.get_user_id(database, current_user_apelido)
 
     if like.resource_type not in [key for key in supported_like_resources.keys()]:
@@ -570,7 +570,7 @@ async def like_post(like: classes.Like, current_user_apelido: str = fastapi.Depe
 
 
 @app.get("/curtidas")
-async def get_likes(like: classes.LikePaging):
+async def get_likes(like: classes.ResourcePaging):
     if like.resource_type not in [key for key in supported_like_resources.keys()]:
         raise fastapi.HTTPException(status_code=400, detail="Recurso nao suportado")
 
@@ -594,3 +594,23 @@ async def get_likes(like: classes.LikePaging):
 
     return JSONResponse(content=j, headers=headers)
     
+
+# Moderação
+
+@app.post("/mod/remover")
+async def delete_resource(resource_info: classes.ResourceInfo, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
+    user_id = utils.get_user_id(database, current_user_apelido)
+
+    utils.check_privileges(database, user_id)
+    utils.check_existence(database, resource_info.resource_type, "id", str(resource_info.resource_id))
+
+    deleted_bool = "true"
+
+    if utils.select_where(database, str(resource_info.resource_id), "id", resource_info.resource_type, ["deletado"], ignore_deleted=False)[resource_info.resource_type][0]["deletado"]:
+        deleted_bool = "false"
+
+    helpers.update_multiple_data(database, resource_info.resource_type, ["deletado", "deletor_id"], "id", str(resource_info.resource_id), [deleted_bool, str(user_id)])
+
+    j = {"status": "OK"}
+    return JSONResponse(content=j, headers=headers)
+

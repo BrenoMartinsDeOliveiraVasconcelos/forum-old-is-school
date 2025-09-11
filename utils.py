@@ -64,6 +64,7 @@ def select_all(
     where: bool = False,
     condition_column: str = "",
     condition_value: str = "",
+    ignore_deleted: bool = True
 ) -> dict:
     columns = columns.copy()
     if 'deletado' not in columns:
@@ -98,7 +99,7 @@ def select_all(
     for row in rows:
         row_dict = {}
         for idx, col_name in enumerate(col_names):
-            if col_name == 'deletado':
+            if col_name == 'deletado' and ignore_deleted:
                 continue
                 
             value = row[idx]
@@ -117,7 +118,7 @@ def select_all(
     return result
 
 
-def select_where(connection: psycopg2.extensions.connection, value: str, comun_fetch: str, table_fetch: str, return_columns: list, raise_on_notfound: bool = False) -> dict:
+def select_where(connection: psycopg2.extensions.connection, value: str, comun_fetch: str, table_fetch: str, return_columns: list, raise_on_notfound: bool = False, ignore_deleted: bool = True) -> dict:
     cursor = connection.cursor()
     
     return_columns.append("deletado")
@@ -139,7 +140,7 @@ def select_where(connection: psycopg2.extensions.connection, value: str, comun_f
         else :
             return result
     for row in rows:
-        if row[-1]:
+        if row[-1] and ignore_deleted:
             continue
         
         mut_row = [r for r in row]
@@ -156,7 +157,7 @@ def select_where(connection: psycopg2.extensions.connection, value: str, comun_f
 def get_user_id(connection: psycopg2.extensions.connection, username: str):
     result = select_where(connection, username, "apelido", "usuarios", ["id"])
 
-    if result is not None:
+    if len(result["usuarios"]) > 0:
         return result["usuarios"][0]["id"]
     else:
         raise fastapi.HTTPException(status_code=401, detail="Acesso não permitido")
