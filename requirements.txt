@@ -1,5 +1,5 @@
 fastapi[all]
-jose[cryptography]
+python-jose[cryptography]
 passlib[bcrypt]
 psycopg2-binary
 requests

@@ -74,7 +74,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = fastapi.
 
     j = {"access_token": access_token, "token_type": "bearer"}
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/usuarios")
@@ -89,18 +89,15 @@ async def create_user(user: classes.UserCreate):
 
     j = {"user_id": result[0]}
 
-    return JSONResponse(content=j, headers=headers) #type: ignore
+    return helpers.api_response(j)
     
 
 @app.post("/posts")
 async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     autor_id = utils.get_user_id(database, current_user_apelido)
-    assinatura = utils.select_where(database, autor_id, "id", "usuarios", ["assinatura"])["usuarios"][0]["assinatura"]
 
-    print(assinatura)
 
-    if assinatura:
-        info.conteudo += "\n\n" + assinatura
+    info.conteudo = helpers.append_signature(database, autor_id, info.conteudo)
 
     utils.check_existence(database, "categorias", "id", str(info.categoria_id))
     
@@ -108,15 +105,12 @@ async def publish(info: classes.Publish, current_user_apelido: str = fastapi.Dep
 
     j = {"post_id": result[0]}
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 @app.post("/mural")
 async def publish_with_media(titulo: str, conteudo: str, file: UploadFile = File(...), current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     autor_id = utils.get_user_id(database, current_user_apelido)
-    assinatura = utils.select_where(database, autor_id, "id", "usuarios", ["assinatura"])["usuarios"][0]["assinatura"]
-
-    if assinatura:
-        conteudo += "\n\n" + assinatura
+    conteudo = helpers.append_signature(database, autor_id, conteudo)
 
     caminho_arquivo = os.path.join(media_folder, file.filename)
     with open(caminho_arquivo, "wb+") as buffer:
@@ -126,23 +120,21 @@ async def publish_with_media(titulo: str, conteudo: str, file: UploadFile = File
 
     j = {"post_id": result[0]}
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/comentarios")
 async def comment(info: classes.Comment, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     autor_id = utils.get_user_id(database, current_user_apelido)
-    assinatura = utils.select_where(database, autor_id, "id", "usuarios", ["assinatura"])["usuarios"][0]["assinatura"]
 
-    if assinatura:
-        info.conteudo += "\n\n" + assinatura
+    info.conteudo = helpers.append_signature(database, autor_id, info.conteudo)
 
     utils.check_existence(database, "posts", "id", str(info.post_id))
 
     result = utils.insert_into(database, "comentarios", ["autor_id", "post_id", "conteudo"], [autor_id, info.post_id, info.conteudo], "id")
     
     j = {"comment_id": result[0]}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
     
 
 @app.post("/mensagens")
@@ -154,7 +146,7 @@ async def send_message(info: classes.SendMessage, current_user_apelido: str = fa
 
     result = utils.insert_into(database, "mensagens", ["autor_id", "mensagem"], [autor_id, info.mensagem], "id")
     j = {"message_id": result[0]}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 
@@ -165,7 +157,7 @@ async def create_category(category: classes.Category, current_user_apelido: str 
 
     result = utils.insert_into(database, "categorias", ["titulo", "desc", "autor_id"], [category.titulo, category.desc, user_id], "id")
     j = {"category_id": result[0]}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 # Métodos GET que pegam todos de cada categoria
@@ -181,28 +173,25 @@ async def get_users(paging: classes.Paging):
         paging.page,
         paging.page_size
     )
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.get("/posts")
 async def get_posts(paging: classes.PagingPosts):
     posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"], "posts", paging.page, paging.page_size, where=True, condition_column="categoria_id", condition_value=str(paging.categoria_id))
+    posts = helpers.insert_user_data(database, posts["posts"])
 
-    for post in posts["posts"]:
-        post["autor"] = helpers.get_user_data(database, post["autor_id"]) #utils.select_where(database, post["autor_id"], "id", "usuarios", ["apelido", "avatar_filename"])["usuarios"][0]
 
-    return JSONResponse(content=posts, headers=headers)
+    return helpers.api_response(posts)
 
     
 @app.get("/mensagens")
 async def get_messages(paging: classes.Paging):
     mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens", paging.page, paging.page_size)
     
-    for mensagem in mensagens["mensagens"]:
-        mensagem["autor"] = helpers.get_user_data(database, mensagem["autor_id"])
-    k = mensagens
+    mensagens = helpers.insert_user_data(database, mensagens["mensagens"])
 
-    return JSONResponse(content=mensagens, headers=headers)
+    return helpers.api_response(mensagens)
 
 
 
@@ -213,17 +202,16 @@ async def get_comments(paging: classes.Paging):
     for comentario in comentarios["comentarios"]:
         comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
         comentario["autor"] = helpers.get_user_data(database, comentario["autor_id"])
-    return JSONResponse(content=comentarios, headers=headers)
+    return helpers.api_response(comentarios)
 
 
 @app.get("/categorias")
 async def get_categories(paging: classes.Paging):
     categorias = utils.select_all(database, ["id", "titulo", "desc", "autor_id", "timestamp"], "categorias", paging.page, paging.page_size)
     
-    for c in categorias["categorias"]:
-        c["autor"] = helpers.get_user_data(database, c["autor_id"])
+    categorias = helpers.insert_user_data(database, categorias["categorias"])
     
-    return JSONResponse(content=categorias, headers=headers)
+    return helpers.api_response(categorias)
 
 # Posts por id
 @app.get("/posts/{post_id}")
@@ -251,7 +239,7 @@ async def get_post(post_id: int):
 
         post["comentarios"]["page"] = comentarios["page"]
 
-    return JSONResponse(content=posts, headers=headers)
+    return helpers.api_response(posts)
 
 
 # Tudo relacionado ao usuário
@@ -296,7 +284,7 @@ async def get_user_content(user_id: int, paging: classes.Paging):
             condition_value=str_user_id
         )
     
-    return JSONResponse(content=users, headers=headers)
+    return helpers.api_response(users)
 
 
 @app.get("/comentarios/{comentario_id}")
@@ -308,17 +296,16 @@ async def get_comment(comentario_id: int):
         comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
         comentario["autor"] = utils.select_where(database, comentario["autor_id"], "id", "usuarios", ["id", "apelido", "avatar_filename"])["usuarios"][0]
 
-    return JSONResponse(content=comentarios, headers=headers)
+    return helpers.api_response(comentarios)
 
 
 @app.get("/mensagens/{mensagem_id}")
 async def get_msg(mensagem_id: int):
     mensagens = utils.select_where(database, str(mensagem_id), "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"], True)
     
-    for mensagem in mensagens["mensagens"]:
-        mensagem["autor"] = helpers.get_user_data(database, mensagem["autor_id"])
+    mensagens = helpers.insert_user_data(database, mensagens["mensagens"])
 
-    return JSONResponse(content=mensagens, headers=headers)
+    return helpers.api_response(mensagens)
 
 
 # Conseguir do usuário cada coisa
@@ -337,7 +324,7 @@ async def get_user_posts(user_id: int, paging: classes.Paging):
         condition_value=str(user_id)
     )
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.get("/usuarios/{user_id}/comentarios")
@@ -352,13 +339,11 @@ async def get_user_comments(user_id: int, paging: classes.Paging):
         condition_column="autor_id",
         condition_value=str(user_id)
     )
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.get("/usuarios/{user_id}/mensagens")
 async def get_user_messages(user_id: int, paging: classes.Paging):
-    #j = utils.select_where(database, str(user_id), "autor_id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
-    
     j = utils.select_all(
         connection=database,
         columns=["id", "autor_id", "mensagem", "timestamp"],
@@ -370,7 +355,7 @@ async def get_user_messages(user_id: int, paging: classes.Paging):
         condition_value=str(user_id)
     )
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 # Edição de perfil e afins
@@ -396,7 +381,7 @@ async def edit_avatar(user_id: int, file: UploadFile, current_user_apelido: str 
 
     
     j = {"avatar_filename": avatar_filename_wo_path}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/usuarios/{user_id}/editar/biografia")
@@ -406,7 +391,7 @@ async def edit_bio(bio: classes.Bio, user_id: int, current_user_apelido: str = f
     utils.update_data(database, "usuarios", "biografia", "id", str(user_id), str(bio.texto))    
 
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/usuarios/{user_id}/editar/assinatura")
@@ -416,7 +401,7 @@ async def edit_signature(signature: classes.Signature, user_id: int, current_use
     utils.update_data(database, "usuarios", "assinatura", "id", str(user_id), str(signature.assinatura))    
 
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 # Deleção de coisas
@@ -426,67 +411,39 @@ async def delete_user(user_id: int, current_user_apelido: str = fastapi.Depends(
     
     helpers.update_multiple_data(database, "usuarios", ["apelido", "hash_senha", "avatar_filename", "biografia", "deletado", "admin", "deletor_id"], "id", str(user_id), [deletion+"_"+str(random.randint(1000000, 9999999)), deletion, deletion, deletion, "true", "false", str(user_id)])
     
+    helpers.soft_delete_resource_owner
+
     j = {"status": "Bye :("}
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/posts/{post_id}/deletar")
 async def delete_post(post_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     user_id = utils.get_user_id(database, current_user_apelido)
+    helpers.soft_delete_resource_owner(database, "posts", post_id, user_id, ["titulo", "conteudo"], deletion)
 
-    utils.check_existence(database, "posts", "id", str(post_id))
-    
-    post_data = utils.select_where(database, str(post_id), "id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
-
-    post = post_data["posts"][0]
-
-    if post["autor_id"] != user_id:
-        raise fastapi.HTTPException(status_code=401, detail="Nao autorizado")
-    
-    helpers.update_multiple_data(database, "posts", ["titulo", "conteudo", "deletado", "deletor_id"], "id", str(post_id), [deletion, deletion, "true", str(user_id)])
-    
     j = {"status": "OK"}
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/comentarios/{comment_id}/deletar")
 async def delete_comment(comment_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     user_id = utils.get_user_id(database, current_user_apelido)
+    helpers.soft_delete_resource_owner(database, "comentarios", comment_id, user_id, ["conteudo"], deletion)
 
-    utils.check_existence(database, "comentarios", "id", str(comment_id))
-    
-    comment_data = utils.select_where(database, str(comment_id), "id", "comentarios", ["id", "autor_id", "post_id", "conteudo", "timestamp"])
-
-    comment = comment_data["comentarios"][0]
-
-    if comment["autor_id"] != user_id:
-        raise fastapi.HTTPException(status_code=401, detail="Nao autorizado")
-    
-    helpers.update_multiple_data(database, "comentarios", ["conteudo", "deletado", "deletor_id"], "id", str(comment_id), [deletion, "true", str(user_id)])
-    
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/mensagens/{message_id}/deletar")
 async def delete_message(message_id: int, current_user_apelido: str = fastapi.Depends(auth.get_current_user)):
     logged_id = utils.get_user_id(database, current_user_apelido)
+    helpers.soft_delete_resource_owner(database, "mensagens", message_id, logged_id, ["mensagem"], deletion)
 
-    utils.check_existence(database, "mensagens", "id", str(message_id))
-    
-    message_data = utils.select_where(database, str(message_id), "id", "mensagens", ["id", "autor_id", "mensagem", "timestamp"])
-
-    message = message_data["mensagens"][0]
-
-    if message["autor_id"] != logged_id:
-        raise fastapi.HTTPException(status_code=401, detail="Acesso negado")
-
-    helpers.update_multiple_data(database, "mensagens", ["mensagem", "deletado", "deletor_id"], "id", str(message_id), [deletion, "true", str(logged_id)])
-    
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 # Search
@@ -502,7 +459,7 @@ async def delete_category(catogry_id: int, current_user_apelido: str = fastapi.D
     helpers.update_multiple_data(database, "categorias", ["deletado", "deletor_id"], "id", str(catogry_id), ["true", str(user_id)])
 
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.get("/pesquisar/posts/{search_term}")
@@ -519,15 +476,14 @@ async def search_posts(search_term: str, pagging: classes.Paging):
                 comentario["autor"] = helpers.get_user_data(database, comentario["autor_id"])
                 post["comentarios"].append(comentario)
 
-    return JSONResponse(content=result, headers=headers)
+    return helpers.api_response(result)
 
 
 @app.get("/pesquisar/usuarios/{search_term}")
 async def search_users(search_term: str, pagging: classes.Paging):
     result = utils.search(database, ["id", "apelido", "avatar_filename"], "usuarios", search_term, "apelido", pagging.page, pagging.page_size)
 
-    return JSONResponse(content=result, headers=headers)
-
+    return helpers.api_response(result)
 
 # Conseguir artquivos de mídia
 
@@ -566,7 +522,7 @@ async def like_post(like: classes.ResourceInfo, current_user_apelido: str = fast
         utils.update_data(database, f"curtidas_{like.resource_type}", "deletado", supported_like_resources[like.resource_type], str(like.resource_id), "true")
 
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.get("/curtidas")
@@ -592,7 +548,7 @@ async def get_likes(like: classes.ResourcePaging):
 
     j["curtidas"] = num_likes
 
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
     
 
 # Moderação
@@ -612,7 +568,7 @@ async def delete_resource(resource_info: classes.ResourceInfo, current_user_apel
     helpers.update_multiple_data(database, resource_info.resource_type, ["deletado", "deletor_id"], "id", str(resource_info.resource_id), [deleted_bool, str(user_id)])
 
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
 
 
 @app.post("/mod/privilegios")
@@ -629,4 +585,4 @@ async def set_mod_permissions(user_info: classes.UserInfo, current_user_apelido:
     utils.update_data(database, "usuarios", "admin", "id", str(user_info.user_id), not is_admin)
 
     j = {"status": "OK"}
-    return JSONResponse(content=j, headers=headers)
+    return helpers.api_response(j)
