@@ -1,0 +1,97 @@
+/* ===== DASHBOARD ===== */
+.dashboard-wrapper {
+    background-color: #f4f4f4;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding-top: calc(var(--header-height) + 10px);
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+/* LATERAL ESQUERDA */
+.sidebar {
+    width: 200px;
+    background-color: #6da3d6;
+    padding: 20px;
+    color: #fff;
+    border-radius: 6px;
+    height: fit-content;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.sidebar ul li a:hover {
+    text-decoration: underline;
+}
+
+/* CONTEÚDO CENTRAL */
+.main-content {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    margin: 0 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.main-content h1 {
+    text-align: center;
+    font-size: 24px;
+    color: #3b5c8e;
+    margin-bottom: 20px;
+}
+
+/* POSTS */
+.posts-section h2 {
+    border-bottom: 2px solid #3b5c8e;
+    margin-bottom: 10px;
+}
+
+.post {
+    border: 1px solid #6dbf7d;
+    background-color: #e0f2e9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* LATERAL DIREITA */
+.sidebar-right {
+    width: 200px;
+    background-color: #6da3d6;
+    padding: 20px;
+    color: #fff;
+    border-radius: 6px;
+    height: fit-content;
+}
+
+.sidebar-right ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-right ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar-right ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar-right ul li a:hover {
+    text-decoration: underline;
+}

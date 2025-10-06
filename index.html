@@ -2,27 +2,24 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Login - Fórum OldSchool</title>
-    <link rel="stylesheet" href="frontend/assets/css/login.css">
+  <meta charset="UTF-8">
+  <title>Old Is Cool</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="frontend/assets/img/favicon.ico">
+  
+  <link rel="stylesheet" href="frontend/assets/bootstrap-5.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="frontend/assets/fontawesome-free-7/css/all.min.css">
+  <link rel="stylesheet" href="frontend/assets/css/style.css">
+  <link rel="stylesheet" href="frontend/assets/css/login.css">
+  <link rel="stylesheet" href="frontend/assets/css/dashboard.css">
+
+  <link rel="stylesheet" href="frontend/assets/css/header.css">
 </head>
 
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="username">Usuário:</label>
-            <input type="text" id="username" name="username" required>
+  <main id="app"></main>
 
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit">Entrar</button>
-        </form>
-        <p id="mensagem"></p>
-    </div>
-
-    <script src="js/login.js"></script>
+  <script src="frontend/js/router.js"></script>
 </body>
 
 </html>
