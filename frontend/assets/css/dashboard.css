@@ -1,29 +1,3 @@
-/* ===== DASHBOARD ===== */
-.dashboard-wrapper {
-    background-color: #f4f4f4;
-    min-height: 100vh;
-    box-sizing: border-box;
-    padding-top: calc(var(--header-height) + 10px);
-}
-
-.dashboard-wrapper .row {
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.dashboard-wrapper [class*="col-"] {
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.forum-sidebar {
-    margin-right: 0 !important;
-}
-
-.sidebar {
-    margin-left: 0 !important;
-}
-
 /* ====== CONTEÚDO CENTRAL ====== */
 .main-content {
     background: linear-gradient(to bottom, #6da3d6 0%, #3b5c8e 100%);
