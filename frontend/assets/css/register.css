@@ -1,0 +1,35 @@
+/* ====== CONTEÚDO CENTRAL ====== */
+.register-container {
+    background: linear-gradient(to bottom, #6da3d6 0%, #3b5c8e 100%);
+    border-radius: 8px;
+    color: #fff;
+    padding: 20px;
+    min-height: 500px;
+    border: 2px solid #3b5c8e;
+    box-shadow: 0 0 10px rgba(0,0,0,0.25);
+    font-family: 'Tahoma', sans-serif;
+}
+
+/* Cabeçalho da seção */
+.register-container h2 {
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 6px;
+    text-shadow: 1px 1px 0 #3b5c8e;
+}
+
+/* Área do formulário */
+.register-container form {
+    margin-top: 15px;
+}
+
+/* Mensagens de validação (se precisar) */
+.form-error {
+    color: #ffcccc;
+    font-size: 13px;
+    margin-top: 4px;
+}

@@ -1,40 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
   const app = document.getElementById("app");
 
-  // ====== CARREGA HEADER ÚNICO ======
-  async function loadHeader() {
-    const headerContainer = document.getElementById("header-container");
-    if (!headerContainer) return;
+  async function loadComponent(containerId, url) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
-    const res = await fetch("/frontend/templates/header.html");
+    const res = await fetch(url);
     if (!res.ok) {
-      headerContainer.innerHTML = "<h2>Header não encontrado</h2>";
+      container.innerHTML = `<h2>Componente não encontrado</h2>`;
       return;
     }
 
-    const html = await res.text();
-    headerContainer.innerHTML = html;
-
-    // Adiciona listener do link "Início"
-    const homeLink = document.getElementById("homeLink");
-    if (homeLink) {
-      homeLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        window.navigateTo("/dashboard");
-      });
-    }
+    container.innerHTML = await res.text();
   }
 
   // ====== CARREGA AS PÁGINAS ======
   async function loadView(view) {
+    const mainCol = document.getElementById("main-col");
+    if (!mainCol) return;
+
     const res = await fetch(`/frontend/templates/${view}.html`);
     if (!res.ok) {
-      app.innerHTML = `<h2>Página não encontrada</h2>`;
+      mainCol.innerHTML = `<h2>Página não encontrada</h2>`;
       return;
     }
 
     const html = await res.text();
-    app.innerHTML = html;
+    mainCol.innerHTML = html;
 
     // ======= CARREGA CSS ESPECÍFICO DA PÁGINA =======
     const oldPageCss = document.getElementById("page-specific-css");
@@ -80,14 +72,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function navigateTo(path) {
     window.location.hash = "#" + path;
     if (path == '/') {
-       window.location.hash = path;
+      window.location.hash = path;
     }
   }
 
   window.addEventListener("hashchange", router);
   window.addEventListener("popstate", router);
 
-  loadHeader();
+  loadComponent("header-container", "frontend/templates/partial/header.html");
+  loadComponent("sidebar-left-container", "frontend/templates/partial/sidebar-left.html");
+  loadComponent("sidebar-right-container", "frontend/templates/partial/sidebar-right.html");
   router();
 
   window.navigateTo = navigateTo;

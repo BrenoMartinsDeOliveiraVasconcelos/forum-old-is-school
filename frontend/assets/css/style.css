@@ -40,7 +40,8 @@ body {
 
 /* ====== INPUTS ====== */
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="email"] {
   width: 100%;
   padding: 6px;
   margin-bottom: 15px;
@@ -146,7 +147,6 @@ label {
 .chat-input button {
     border-radius: 20px;
 }
-
 
 /* ====== SIDEBAR DIREITA ====== */
 .forum-sidebar {

@@ -1,130 +1,31 @@
 <!-- CONTEÚDO PRINCIPAL -->
-<main class="container-fluid dashboard-wrapper">
-    <div class="row col-12">
-        <div class="col-12 col-md-4">
-            <aside class="forum-chat d-flex flex-column h-100">
-                <div class="chat-header">
-                    <h3>Chat do Fórum</h3>
-                </div>
-
-                <div class="chat-messages flex-grow-1" id="chatMessages">
-                    <div class="message self"><b>Lucas:</b> Olá pessoal!</div>
-                    <div class="message other"><b>João:</b> E aí, tudo bem?</div>
-                    <div class="message self"><b>Lucas:</b> Tudo certo! Alguém testou o novo jogo?</div>
-                </div>
-
-                <form id="chatForm" class="chat-input row g-1 align-items-center m-2">
-                    <div class="row">
-                        <div class="col-auto">
-                            <i class="fa-regular fa-face-smile fa-lg"></i>
-                        </div>
-                        <div class="col">
-                            <input type="text" id="chatText" class="form-control" placeholder="Digite sua mensagem..."
-                                required>
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa-regular fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </aside>
+<section class="main-content">
+    <h1>Posts em destaque</h1>
+    <div class="posts-section">
+        <h2>Mais votados</h2>
+        <div class="post">
+            <h3>Melhor guia de montagem de PCs antigos</h3>
+            <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
         </div>
-
-
-        <div class="col-12 col-md-6" id="mainContent">
-            <section class="main-content">
-                <h1>Posts em destaque</h1>
-                <div class="posts-section">
-                    <h2>Mais votados</h2>
-                    <div class="post">
-                        <h3>Melhor guia de montagem de PCs antigos</h3>
-                        <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
-                    </div>
-                    <div class="post">
-                        <h3>Guia de montagem de PCs antigos</h3>
-                        <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
-                    </div>
-                    <div class="post">
-                        <h3>Melhor guia de montagem de PCs antigos</h3>
-                        <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
-                    </div>
-                    <div class="post">
-                        <h3>Guia de montagem de PCs antigos</h3>
-                        <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
-                    </div>
-                    <div class="post">
-                        <h3>Melhor guia de montagem de PCs antigos</h3>
-                        <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
-                    </div>
-                    <div class="post">
-                        <h3>Guia de montagem de PCs antigos</h3>
-                        <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
-                    </div>
-                </div>
-            </section>
+        <div class="post">
+            <h3>Guia de montagem de PCs antigos</h3>
+            <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
         </div>
-
-        <div class="col-12 col-md-2">
-            <aside class="forum-sidebar d-flex flex-column h-100">
-
-                <!-- Painel do usuário (para logados) -->
-                <div id="panel-user" class="sidebar-section" hidden>
-                    <div class="sidebar-header">
-                        <h4>Painel</h4>
-                    </div>
-                    <div class="user-info text-center">
-                        <img src="/frontend/assets/img/user.svg" class="user-avatar" alt="Avatar do usuário">
-                        <h5>Lucas</h5>
-                        <p class="user-status text-success">Online</p>
-                    </div>
-                    <div class="sidebar-section">
-                        <h6><i class="fa-regular fa-bell"></i> Notificações</h6>
-                        <ul>
-                            <li><a href="#">Novo comentário no fórum</a></li>
-                            <li><a href="#">Mensagem privada</a></li>
-                            <li><a href="#">Atualização do sistema</a></li>
-                        </ul>
-                    </div>
-                    <div class="sidebar-section mt-auto">
-                        <h6><i class="fa-solid fa-link"></i> Links rápidos</h6>
-                        <ul>
-                            <li><a href="#">Tutoriais</a></li>
-                            <li><a href="#">Downloads</a></li>
-                            <li><a href="#">Galeria</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Login (para não logados) -->
-                <div id="panel-login" class="sidebar-section text-center" hidden>
-                    <div class="sidebar-header">
-                        <h4>Bem-vindo</h4>
-                    </div>
-
-                    <form id="sidebarLoginForm" class="mt-3">
-                        <div class="mb-2 text-start">
-                            <label for="loginUsername" class="form-label">Nome de Usuário</label>
-                            <input type="text" id="loginUsername" class="form-control"
-                                placeholder="Digite seu nome de usuário" required>
-                        </div>
-                        <div class="mb-2 text-start">
-                            <label for="loginPassword" class="form-label">Senha</label>
-                            <input type="password" id="loginPassword" class="form-control"
-                                placeholder="Digite sua senha" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
-
-                    <div class="mt-2">
-                        <a href="#" id="forgotPassword" class="d-block small">Esqueci minha senha</a>
-                        <a href="#" id="register" class="d-block small">Cadastre-se</a>
-                    </div>
-                </div>
-
-            </aside>
+        <div class="post">
+            <h3>Melhor guia de montagem de PCs antigos</h3>
+            <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
+        </div>
+        <div class="post">
+            <h3>Guia de montagem de PCs antigos</h3>
+            <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
+        </div>
+        <div class="post">
+            <h3>Melhor guia de montagem de PCs antigos</h3>
+            <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
+        </div>
+        <div class="post">
+            <h3>Guia de montagem de PCs antigos</h3>
+            <p class="post-meta">Postado por <b>Lucas</b> em 2007</p>
         </div>
     </div>
-</main>
-</body>
+</section>

@@ -6,7 +6,7 @@
   <title>Old Is Cool</title>
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/frontend/assets/img/favicon.ico">
-  
+
   <link rel="stylesheet" href="/frontend/assets/bootstrap-5.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="/frontend/assets/fontawesome-free-7/css/all.min.css">
   <link rel="stylesheet" href="/frontend/assets/css/style.css">
@@ -15,7 +15,16 @@
 
 <body>
   <div id="header-container"></div>
-  <main id="app"></main>
+
+  <main class="container-fluid dashboard-wrapper">
+    <div class="row col-12">
+      <div id="sidebar-left-container" class="col-12 col-md-4"></div>
+
+      <div id="main-col" class="col-12 col-md-6"></div>
+
+      <div id="sidebar-right-container" class="col-12 col-md-2"></div>
+    </div>
+  </main>
 
   <script src="/frontend/js/router.js"></script>
 </body>
