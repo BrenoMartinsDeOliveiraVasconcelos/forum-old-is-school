@@ -1,27 +1,18 @@
-/* AJUSTE DINÂMICO DO CONTEUDO DO DASHBOARD */
-function ajustarDashboard() {
-    const header = document.querySelector('header.site-header');
-    const dashboard = document.querySelector('.dashboard-wrapper');
+/* CHAMADA DA TELA DE LOGIN */
+function setupLoginButton() {
+    const btnLogin = document.getElementById('loginBtn');
+    if (!btnLogin) return; // evita erro se o botão não existir
 
-    if (!header || !dashboard) return;
-
-    const alturaHeader = header.getBoundingClientRect().height;
-
-    // Condicional baseada na largura da tela
-    const larguraTela = window.innerWidth;
-    let extraPadding = 0;
-
-    if (larguraTela <= 1365) {
-        extraPadding = 50;
-    } else if (larguraTela <= 1920) {
-        extraPadding = 20;
-    } else {
-        extraPadding = 30; // para telas maiores, se quiser
-    }
-
-    dashboard.style.paddingTop = (alturaHeader + extraPadding) + 'px';
+    btnLogin.addEventListener('click', () => {
+        // Altera o hash para disparar o router
+        // window.location.hash = '#/login';
+        // ou se você quer usar history.pushState:
+        history.pushState({}, '', '/login');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    });
 }
 
-// Ajusta no load e resize
-window.addEventListener('load', ajustarDashboard);
-window.addEventListener('resize', ajustarDashboard);
+// Chame essa função após o DOM estar carregado
+document.addEventListener('DOMContentLoaded', () => {
+    setupLoginButton();
+});

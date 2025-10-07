@@ -1,9 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const app = document.getElementById("app");
 
-  // Carrega uma view do templates
+  // ====== CARREGA AS PÁGINAS ======
   async function loadView(view) {
     const res = await fetch(`frontend/templates/${view}.html`);
+    console.log(res);
+
     if (!res.ok) {
       app.innerHTML = `<h2>Página não encontrada</h2>`;
       return;
@@ -11,44 +13,59 @@ document.addEventListener("DOMContentLoaded", () => {
     const html = await res.text();
     app.innerHTML = html;
 
-    // Se for dashboard, adiciona logout
-    if (view === "dashboard") {
-      const btn = document.getElementById("logoutBtn");
-      if (btn) btn.addEventListener("click", () => navigateTo("/login"));
-    }
 
-    // Se for login, intercepta submit
+    // ====== CARREGA O CSS ESPECÍFICO POR PAGINA ======
+    const oldPageCss = document.getElementById("page-specific-css");
+    if (oldPageCss) oldPageCss.remove();
+
+    const pageCss = document.createElement("link");
+    pageCss.rel = "stylesheet";
+    pageCss.id = "page-specific-css";
+    pageCss.href = `/frontend/assets/css/${view}.css`;
+
+    pageCss.onerror = () => pageCss.remove();
+
+    document.head.appendChild(pageCss);
+
+
+    // ====== FAZ O LOGIN E CHAMA A DASHBOARD ======
     if (view === "login") {
       const form = document.getElementById("loginForm");
       if (form) {
         form.addEventListener("submit", (e) => {
           e.preventDefault();
-          // Aqui você pode fazer fetch POST para validar usuário
+          sessionStorage.setItem('auth', '1'); // mock auth
           navigateTo("/dashboard");
         });
       }
     }
+
+    // ====== FAZ O LOGIN NO SIDEBAR ======
+    const btnLoginSidebar = document.getElementById("loginBtn");
+    if (btnLoginSidebar) {
+      btnLoginSidebar.addEventListener("click", () => {
+        navigateTo("/login");
+      });
+    }
   }
-function router() {
-  const hash = window.location.hash || "#/login";
-  if(hash === "#/login") loadView("login");
-  else if(hash === "#/dashboard") loadView("dashboard");
-  else app.innerHTML = "<h2>Página não encontrada</h2>";
-}
 
-window.addEventListener("hashchange", router);
-window.addEventListener("DOMContentLoaded", router);
 
-function navigateTo(hash) {
-  window.location.hash = hash;
-}
+  // ====== DEFINE A PÁGINA INICIAL ======
+  function router() {
+    const hash = window.location.hash || "#/dashboard";
+    if (hash === "#/login") loadView("login");
+    else if (hash === "#/dashboard") loadView("dashboard");
+    else app.innerHTML = "<h2>Página não encontrada</h2>";
+  }
 
-  // Quando navega com os botões do browser
+  // ====== AJUSTA A URL PARA QUE RECARREGUE A PAGINA ATUAL ======
+  function navigateTo(path) {
+    window.location.hash = "#" + path;
+  }
+
+  window.addEventListener("hashchange", router);
   window.addEventListener("popstate", router);
-
-  // Inicial
   router();
 
-  // Expondo navigateTo globalmente (opcional)
   window.navigateTo = navigateTo;
 });
