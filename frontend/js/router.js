@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pageCss.onerror = () => pageCss.remove();
     document.head.appendChild(pageCss);
 
-    // === JS BASE (carrega em todas as páginas) ===
+    // ====== JS BASE (carrega em todas as páginas) ======
     const oldBaseScript = document.getElementById("base-js");
     if (!oldBaseScript) {
       const baseScript = document.createElement("script");
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("hashchange", router);
   window.addEventListener("popstate", router);
-
+ // ====== CARREGA OS COMPONENTES ======
   loadComponent("header-container", "frontend/templates/partial/header.html");
   loadComponent("sidebar-left-container", "frontend/templates/partial/sidebar-left.html");
   loadComponent("sidebar-right-container", "frontend/templates/partial/sidebar-right.html");

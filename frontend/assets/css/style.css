@@ -12,30 +12,9 @@ body {
 }
 
 /* ====== VARIÁVEIS ======*/
-
 :root {
   --header-height: 350px;
   --color-title-container: linear-gradient(to bottom, #6da3d6, #3b5c8e); 
-}
-
-/* ====== CONTAINER ====== */
-
-.container-oic {
-  width: 320px;
-  padding: 20px;
-  background-color: #ffffff;
-  border: 2px solid #6da3d6;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.container-oic h2 {
-  margin: -20px -20px 20px -20px;
-  padding: 10px;
-  background: var(--color-title-container);
-  color: #fff;
-  font-size: 18px;
-  text-align: center;
-  border-bottom: 2px solid #3b5c8e;
 }
 
 /* ====== INPUTS ====== */

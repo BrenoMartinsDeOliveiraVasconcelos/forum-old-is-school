@@ -20,7 +20,7 @@ if not postgree_user or not postgree_password:
 
 config = json.load(open("config.json", encoding='utf-8'))
 db_config = config["database"]
-database = utils.get_connection(db_config, postgree_user, postgree_password)
+database = utils.get_connection(db_config, db_config["user"], db_config["password"])
 
 if not database:
     raise Exception("Database connection error")
