@@ -1,0 +1,27 @@
+<aside class="forum-chat d-flex flex-column h-100">
+    <div class="chat-header">
+        <h3>Chat do Fórum</h3>
+    </div>
+
+    <div class="chat-messages flex-grow-1" id="chatMessages">
+        <div class="message self"><b>Lucas:</b> Olá pessoal!</div>
+        <div class="message other"><b>João:</b> E aí, tudo bem?</div>
+        <div class="message self"><b>Lucas:</b> Tudo certo! Alguém testou o novo jogo?</div>
+    </div>
+
+    <form id="chatForm" class="chat-input row g-1 align-items-center m-2">
+        <div class="row">
+            <div class="col-auto">
+                <i class="fa-regular fa-face-smile fa-lg"></i>
+            </div>
+            <div class="col">
+                <input type="text" id="chatText" class="form-control" placeholder="Digite sua mensagem..." required>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-regular fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</aside>

@@ -1,0 +1,55 @@
+<aside class="forum-sidebar d-flex flex-column h-100">
+
+    <!-- Painel do usuário (para logados) -->
+    <div id="panel-user" class="sidebar-section" hidden>
+        <div class="sidebar-header">
+            <h4>Painel</h4>
+        </div>
+        <div class="user-info text-center">
+            <img src="/frontend/assets/img/user.svg" class="user-avatar" alt="Avatar do usuário">
+            <h5>Lucas</h5>
+            <p class="user-status text-success">Online</p>
+        </div>
+        <div class="sidebar-section">
+            <h6><i class="fa-regular fa-bell"></i> Notificações</h6>
+            <ul>
+                <li><a href="#">Novo comentário no fórum</a></li>
+                <li><a href="#">Mensagem privada</a></li>
+                <li><a href="#">Atualização do sistema</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section mt-auto">
+            <h6><i class="fa-solid fa-link"></i> Links rápidos</h6>
+            <ul>
+                <li><a href="#">Tutoriais</a></li>
+                <li><a href="#">Downloads</a></li>
+                <li><a href="#">Galeria</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Login (para não logados) -->
+    <div id="panel-login" class="sidebar-section text-center" hidden>
+        <div class="sidebar-header">
+            <h4>Bem-vindo</h4>
+        </div>
+
+        <form id="sidebarLoginForm" class="mt-3">
+            <div class="mb-2 text-start">
+                <label for="loginUsername" class="form-label">Nome de Usuário</label>
+                <input type="text" id="loginUsername" class="form-control" placeholder="Digite seu nome de usuário"
+                    required>
+            </div>
+            <div class="mb-2 text-start">
+                <label for="loginPassword" class="form-label">Senha</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Digite sua senha" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+
+        <div class="mt-2">
+            <a href="#" id="forgotPassword" class="d-block small">Esqueci minha senha</a>
+            <a href="#" id="register" class="d-block small">Cadastre-se</a>
+        </div>
+    </div>
+</aside>

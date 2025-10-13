@@ -1,0 +1,237 @@
+/* ====== CSS GERAL ====== */
+body {
+  background: #f5f5f5;
+  font-family: Verdana, Tahoma;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* ====== VARIÁVEIS ======*/
+:root {
+  --header-height: 350px;
+  --color-title-container: linear-gradient(to bottom, #6da3d6, #3b5c8e); 
+}
+
+/* ====== INPUTS ====== */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 15px;
+  border: 1px solid #6da3d6;
+  outline: none;
+  font-size: 13px;
+  background-color: #fefefe;
+}
+
+/* ====== BOTÃO VERDE ====== */
+button {
+  width: 100%;
+  padding: 8px;
+  background: linear-gradient(to bottom, #6dbf7d, #3b5c8e);
+  color: #fff;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+button:hover {
+  background: linear-gradient(to bottom, #3b5c8e, #6dbf7d);
+}
+
+/* ====== MENSAGEM ====== */
+#mensagem {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: #d00;
+}
+
+/* ====== ALTERAÇÃO DA LABEL ====== */
+label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* ====== CHAT SIDEBAR ====== */
+.forum-chat {
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    border: 2px solid #6da3d6;
+    border-radius: 6px;
+    background-color: #f0f0f0;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ====== CABEÇALHO DO CHAT ====== */
+.chat-header {
+    background-color: #6da3d6;
+    color: #fff;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 2px solid #3b5c8e;
+}
+
+/* ====== AREA DE MENSAGENS ====== */
+.chat-messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.message {
+    padding: 6px 10px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.message.self {
+    align-self: flex-start;
+    text-align: left;
+}
+
+.message.other {
+    align-self: flex-end;
+    text-align: right;
+}
+
+/* ====== INPUT DE DIGITAÇÃO ====== */
+.chat-input {
+    display: flex;
+    padding: 5px 0;
+}
+
+.chat-input input {
+    border-radius: 20px;
+}
+
+.chat-input button {
+    border-radius: 20px;
+}
+
+/* ====== SIDEBAR DIREITA ====== */
+.forum-sidebar {
+  width: 100%;
+  background-color: #f0f0f0;
+  border: 3px solid #6da3d6;
+  border-radius: 8px;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* ====== CABEÇALHO DA SIDEBAR ====== */
+.sidebar-header {
+  background-color: #6da3d6;
+  color: #fff;
+  text-align: center;
+  padding: 10px 6px;
+  font-weight: bold;
+  border-bottom: 3px solid #3b5c8e;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+/* ====== SEÇÕES DA SIDEBAR ====== */
+.sidebar-section {
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.sidebar-section h6 {
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: #3b5c8e;
+  border-bottom: 1px solid #6da3d6;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.sidebar-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-section ul li {
+  margin-bottom: 8px;
+}
+
+.sidebar-section ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.sidebar-section ul li a:hover {
+  color: #3b5c8e;
+  text-decoration: underline;
+}
+
+/* ====== AVATAR ====== */
+.user-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid #6da3d6
+}
+
+.user-status {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .forum-sidebar {
+    margin-top: 10px;
+  }
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard-wrapper {
+    background-color: #f4f4f4;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding-top: calc(var(--header-height) + 10px);
+}
+
+.dashboard-wrapper .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.dashboard-wrapper [class*="col-"] {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.forum-sidebar {
+    margin-right: 0 !important;
+}
+
+.sidebar {
+    margin-left: 0 !important;
+}

@@ -1,0 +1,6 @@
+/* POSICIONAMENTO DO CONTAINER DE LOGIN */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
