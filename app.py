@@ -36,7 +36,6 @@ app = fastapi.FastAPI(
 headers = {"Access-Control-Allow-Origin": "*"}
 supported_like_resources = {"posts": "post_id", "comentarios": "comentario_id"}
 
-origins = ["127.0.0.1", "localhost"]
 
 app.add_middleware(
     CORSMiddleware,
