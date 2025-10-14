@@ -40,5 +40,4 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
 Handler = MyHttpRequestHandler
 with socketserver.TCPServer((HOST, int(PORT)), Handler) as httpd:
     print(f"Serving at http://{HOST}:{PORT}")
-    print("Blocked files: *.py, /.*")
     httpd.serve_forever()

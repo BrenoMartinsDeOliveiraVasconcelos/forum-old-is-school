@@ -366,3 +366,14 @@ A API possui um sistema consistente de status code, retornando um códiggo HTTP 
 | 404 | Recurso não encontrado |
 | 409 | O request poussui um valor que deve ser unico, mas esse valor já existe |
 | 500 | Erro no servidor |
+
+
+# 5 - Iniciando o frontend
+
+Depois de configurado a API e atestado o funcionamento, devemos iniciar o frontend. Para iniciar, basta rodar o arquivo  ```frontend.py ```.
+
+```sh
+python3 frontend.py host porta
+```
+
+Sendo  ```host``` o IP onde o frontend irá rodar e  ```porta``` a porta que ele irá rodar.
