@@ -9,22 +9,13 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     forbidden_endings = [".py", ".md", ".sql", ".json", ".txt", ".sh"]
     forbidden_starts = ["/."]
     def do_GET(self):
-        error = False
+        starts_forbidden = any(self.path.startswith(s) for s in self.forbidden_starts)
+        ends_forbidden = any(self.path.endswith(e) for e in self.forbidden_endings)
 
-        for ending in self.forbidden_endings:
-            if self.path.endswith(ending):
-                error = True
-                break
-
-        for start in self.forbidden_starts:
-            if self.path.startswith(start):
-                error = True
-                break
-
-        if error:
+        if starts_forbidden or ends_forbidden:
             self.send_error(403, "Forbidden")
             return
-
+        
         return super().do_GET()
 
 if __name__ == "__main__":
@@ -42,4 +33,3 @@ if __name__ == "__main__":
     with socketserver.TCPServer((HOST, int(PORT)), Handler) as httpd:
         print(f"Serving at http://{HOST}:{PORT}")
         httpd.serve_forever()
-        
