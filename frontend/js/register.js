@@ -28,8 +28,8 @@ if (form) {
                 return;
             }
 
-            const host = config.database.host;
-            const port = config.database.port;
+            const host = config.backend.host;
+            const port = config.backend.port;
 
             const apiUrl = `http://${host}:${port}/usuarios`;
             console.log("Tentando acessar:", apiUrl);
