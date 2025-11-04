@@ -47,6 +47,23 @@ document.addEventListener("DOMContentLoaded", () => {
       baseScript.type = "module";
       document.body.appendChild(baseScript);
     }
+    const oldBaseConfig = document.getElementById("config-js");
+    if (!oldBaseConfig) {
+      const baseConfig = document.createElement("script");
+      baseConfig.id = "config-js";
+      baseConfig.src = "/frontend/js/config.js";
+      baseConfig.type = "module";
+      document.body.appendChild(baseConfig);
+    }
+    const oldCKEditorScript = document.getElementById("ckeditor-js");
+    if (!oldCKEditorScript) {
+      const CKEditorScript = document.createElement("script");
+      CKEditorScript.id = "ckeditor-js";
+      CKEditorScript.src = "https://cdn.ckeditor.com/ckeditor5/47.1.0/ckeditor5.umd.js";
+      CKEditorScript.type = "module";
+      document.body.appendChild(CKEditorScript);
+    }
+
 
     // ====== CARREGA JS ESPECÍFICO DA PÁGINA ======
     const oldPageScript = document.getElementById("page-specific-js");
@@ -65,6 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (hash === "#") loadView("dashboard");
     else if (hash === "#/dashboard") loadView("dashboard");
     else if (hash === "#/register") loadView("register");
+    else if (hash === "#/forum") loadView("forum");
+    else if (hash === "#/novo_post") loadView("new_post");
     else app.innerHTML = "<h2>Página não encontrada</h2>";
   }
 
