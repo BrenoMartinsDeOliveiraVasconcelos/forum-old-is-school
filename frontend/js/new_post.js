@@ -1,3 +1,4 @@
+document.addEventListener('DOMContentLoaded', () => {
 const {
     ClassicEditor,
     Essentials,
@@ -18,3 +19,4 @@ ClassicEditor
     })
     .then( /* ... */)
     .catch( /* ... */);
+});

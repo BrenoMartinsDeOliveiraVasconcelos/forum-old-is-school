@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const html = await res.text();
     mainCol.innerHTML = html;
+    document.dispatchEvent(new CustomEvent("viewLoaded", { detail: { view } }));
 
     // ======= CARREGA CSS ESPECÍFICO DA PÁGINA =======
     const oldPageCss = document.getElementById("page-specific-css");
@@ -97,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("hashchange", router);
   window.addEventListener("popstate", router);
- // ====== CARREGA OS COMPONENTES ======
+  // ====== CARREGA OS COMPONENTES ======
   loadComponent("header-container", "frontend/templates/partial/header.html");
   loadComponent("sidebar-left-container", "frontend/templates/partial/sidebar-left.html");
   loadComponent("sidebar-right-container", "frontend/templates/partial/sidebar-right.html");
