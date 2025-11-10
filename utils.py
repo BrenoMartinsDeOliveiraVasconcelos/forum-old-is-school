@@ -182,9 +182,9 @@ def insert_into(connection: psycopg2.extensions.connection, table: str, columns:
 
         return result
     except (psycopg2.errors.UniqueViolation):
-        fastapi.raise_exception(fastapi.HTTPException(status_code=409, detail="Item ja cadastrado"))
+        raise fastapi.HTTPException(status_code=409, detail="Item ja cadastrado")
     except (psycopg2.errors.StringDataRightTruncation):
-        fastapi.raise_exception(fastapi.HTTPException(status_code=400, detail="Conteudo muito longo"))
+        raise fastapi.HTTPException(status_code=400, detail="Conteudo muito longo")
     finally:
 
         if rollback:
