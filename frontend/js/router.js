@@ -56,6 +56,14 @@ document.addEventListener("DOMContentLoaded", () => {
       baseConfig.type = "module";
       document.body.appendChild(baseConfig);
     }
+    const oldLoginScript = document.getElementById("login-js");
+    if (!oldLoginScript) {
+      const loginScript = document.createElement("script");
+      loginScript.id = "login-js";
+      loginScript.src = "/frontend/js/login.js";
+      loginScript.type = "module";
+      document.body.appendChild(loginScript);
+    }
     const oldCKEditorScript = document.getElementById("ckeditor-js");
     if (!oldCKEditorScript) {
       const CKEditorScript = document.createElement("script");

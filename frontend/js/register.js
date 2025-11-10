@@ -53,7 +53,7 @@ if (form) {
             const data = await response.json();
             console.log("Usuário cadastrado:", data);
 
-            console.log({ username, email, password });
+            console.log({ username, password });
             alert("Usuário cadastrado com sucesso!");
 
             window.navigateTo("/dashboard");

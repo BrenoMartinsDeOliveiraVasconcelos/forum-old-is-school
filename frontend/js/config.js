@@ -1,8 +1,8 @@
 window.APP_CONFIG = {
     database: {
         name: "postgres",
-        host: "localhost",
-        port: 8080
+        host: "35.215.200.230",
+        port: 9090
     },
     app: {
         text_on_deletion: "Excluído",
