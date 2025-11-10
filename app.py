@@ -34,18 +34,18 @@ app = fastapi.FastAPI(
 )
 
 headers = {"Access-Control-Allow-Origin": "*"}
-origins = [
-    "http://localhost:9090",
-    "http://localhost:8080", # Adicione outras portas de dev se necessário
-    "http://35.215.200.230:9090",
-    "http://35.215.200.230:8080"
-]
+#origins = [
+#    "http://localhost:9090",
+#    "http://localhost:8080", # Adicione outras portas de dev se necessário
+#    "http://35.215.200.230:9090",
+#    "http://35.215.200.230:8080"
+#]
 supported_like_resources = {"posts": "post_id", "comentarios": "comentario_id"}
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins="*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
