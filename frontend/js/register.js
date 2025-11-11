@@ -1,5 +1,3 @@
-import { loadConfig } from "./config.js";
-
 const form = document.getElementById("registerForm");
 
 if (form) {
@@ -21,15 +19,17 @@ if (form) {
         }
         
         try {
-            const config = await loadConfig();
+            const config = window.APP_CONFIG;
 
             if (!config) {
                 alert("Erro ao carregar configuração do sistema.");
                 return;
             }
 
-            const host = config.backend.host;
-            const port = config.backend.port;
+            const host = config.database.host;
+            const port = config.database.port;
+            console.log(host, port);
+            
 
             const apiUrl = `http://${host}:${port}/usuarios`;
             console.log("Tentando acessar:", apiUrl);
@@ -53,7 +53,7 @@ if (form) {
             const data = await response.json();
             console.log("Usuário cadastrado:", data);
 
-            console.log({ username, email, password });
+            console.log({ username, password });
             alert("Usuário cadastrado com sucesso!");
 
             window.navigateTo("/dashboard");

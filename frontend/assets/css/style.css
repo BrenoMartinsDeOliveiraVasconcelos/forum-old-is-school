@@ -14,13 +14,23 @@ body {
 /* ====== VARIÁVEIS ======*/
 :root {
   --header-height: 350px;
-  --color-title-container: linear-gradient(to bottom, #6da3d6, #3b5c8e); 
+  --color-title-container: linear-gradient(to bottom, #6da3d6, #3b5c8e);
 }
 
 /* ====== INPUTS ====== */
 input[type="text"],
 input[type="password"],
 input[type="email"] {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 15px;
+  border: 1px solid #6da3d6;
+  outline: none;
+  font-size: 13px;
+  background-color: #fefefe;
+}
+
+.form-control {
   width: 100%;
   padding: 6px;
   margin-bottom: 15px;
@@ -41,6 +51,7 @@ button {
   cursor: pointer;
   font-weight: bold;
   text-transform: uppercase;
+  border-radius: 5px;
 }
 
 button:hover {
@@ -57,74 +68,74 @@ button:hover {
 
 /* ====== ALTERAÇÃO DA LABEL ====== */
 label {
-    display: block;
-    font-size: 13px;
-    margin-bottom: 5px;
-    color: #333;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: #333;
 }
 
 /* ====== CHAT SIDEBAR ====== */
 .forum-chat {
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-    border: 2px solid #6da3d6;
-    border-radius: 6px;
-    background-color: #f0f0f0;
-    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  border: 2px solid #6da3d6;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* ====== CABEÇALHO DO CHAT ====== */
 .chat-header {
-    background-color: #6da3d6;
-    color: #fff;
-    padding: 8px;
-    text-align: center;
-    font-weight: bold;
-    border-bottom: 2px solid #3b5c8e;
+  background-color: #6da3d6;
+  color: #fff;
+  padding: 8px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 2px solid #3b5c8e;
 }
 
 /* ====== AREA DE MENSAGENS ====== */
 .chat-messages {
-    flex-grow: 1;
-    padding: 10px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    background-color: #fff;
-    border-radius: 4px;
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background-color: #fff;
+  border-radius: 4px;
 }
 
 .message {
-    padding: 6px 10px;
-    border-radius: 10px;
-    max-width: 80%;
-    word-wrap: break-word;
+  padding: 6px 10px;
+  border-radius: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
 }
 
 .message.self {
-    align-self: flex-start;
-    text-align: left;
+  align-self: flex-start;
+  text-align: left;
 }
 
 .message.other {
-    align-self: flex-end;
-    text-align: right;
+  align-self: flex-end;
+  text-align: right;
 }
 
 /* ====== INPUT DE DIGITAÇÃO ====== */
 .chat-input {
-    display: flex;
-    padding: 5px 0;
+  display: flex;
+  padding: 5px 0;
 }
 
 .chat-input input {
-    border-radius: 20px;
+  border-radius: 20px;
 }
 
 .chat-input button {
-    border-radius: 20px;
+  border-radius: 20px;
 }
 
 /* ====== SIDEBAR DIREITA ====== */
@@ -133,7 +144,7 @@ label {
   background-color: #f0f0f0;
   border: 3px solid #6da3d6;
   border-radius: 8px;
-  box-shadow: 3px 3px 6px rgba(0,0,0,0.25);
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25);
   padding: 12px;
   box-sizing: border-box;
 }
@@ -158,7 +169,7 @@ label {
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 12px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-section h6 {
@@ -212,26 +223,26 @@ label {
 
 /* ===== DASHBOARD ===== */
 .dashboard-wrapper {
-    background-color: #f4f4f4;
-    min-height: 100vh;
-    box-sizing: border-box;
-    padding-top: calc(var(--header-height) + 10px);
+  background-color: #f4f4f4;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-top: calc(var(--header-height) + 10px);
 }
 
 .dashboard-wrapper .row {
-    margin-left: 0;
-    margin-right: 0;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .dashboard-wrapper [class*="col-"] {
-    padding-left: 8px;
-    padding-right: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .forum-sidebar {
-    margin-right: 0 !important;
+  margin-right: 0 !important;
 }
 
 .sidebar {
-    margin-left: 0 !important;
+  margin-left: 0 !important;
 }

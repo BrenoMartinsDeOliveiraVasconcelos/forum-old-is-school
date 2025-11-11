@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const html = await res.text();
     mainCol.innerHTML = html;
+    document.dispatchEvent(new CustomEvent("viewLoaded", { detail: { view } }));
 
     // ======= CARREGA CSS ESPECÍFICO DA PÁGINA =======
     const oldPageCss = document.getElementById("page-specific-css");
@@ -47,6 +48,31 @@ document.addEventListener("DOMContentLoaded", () => {
       baseScript.type = "module";
       document.body.appendChild(baseScript);
     }
+    const oldBaseConfig = document.getElementById("config-js");
+    if (!oldBaseConfig) {
+      const baseConfig = document.createElement("script");
+      baseConfig.id = "config-js";
+      baseConfig.src = "/frontend/js/config.js";
+      baseConfig.type = "module";
+      document.body.appendChild(baseConfig);
+    }
+    const oldLoginScript = document.getElementById("login-js");
+    if (!oldLoginScript) {
+      const loginScript = document.createElement("script");
+      loginScript.id = "login-js";
+      loginScript.src = "/frontend/js/login.js";
+      loginScript.type = "module";
+      document.body.appendChild(loginScript);
+    }
+    const oldCKEditorScript = document.getElementById("ckeditor-js");
+    if (!oldCKEditorScript) {
+      const CKEditorScript = document.createElement("script");
+      CKEditorScript.id = "ckeditor-js";
+      CKEditorScript.src = "https://cdn.ckeditor.com/ckeditor5/47.1.0/ckeditor5.umd.js";
+      CKEditorScript.type = "module";
+      document.body.appendChild(CKEditorScript);
+    }
+
 
     // ====== CARREGA JS ESPECÍFICO DA PÁGINA ======
     const oldPageScript = document.getElementById("page-specific-js");
@@ -65,6 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (hash === "#") loadView("dashboard");
     else if (hash === "#/dashboard") loadView("dashboard");
     else if (hash === "#/register") loadView("register");
+    else if (hash === "#/forum") loadView("forum");
+    else if (hash === "#/novo_post") loadView("new_post");
+    else if (hash === "#/post/1234") loadView("post");
     else app.innerHTML = "<h2>Página não encontrada</h2>";
   }
 
@@ -78,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("hashchange", router);
   window.addEventListener("popstate", router);
- // ====== CARREGA OS COMPONENTES ======
+  // ====== CARREGA OS COMPONENTES ======
   loadComponent("header-container", "frontend/templates/partial/header.html");
   loadComponent("sidebar-left-container", "frontend/templates/partial/sidebar-left.html");
   loadComponent("sidebar-right-container", "frontend/templates/partial/sidebar-right.html");
