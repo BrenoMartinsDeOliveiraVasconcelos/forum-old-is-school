@@ -64,7 +64,9 @@ Preencha o arquivo config.json com as configurações feitas na hora da instala�
     },
     "app": {
         "text_on_deletion": "Excluído",
-        "data_path": "./data"
+        "data_path": "./data",
+        "ip": 127.0.0.1,
+        "port": 9090
     }
 }
 ```
