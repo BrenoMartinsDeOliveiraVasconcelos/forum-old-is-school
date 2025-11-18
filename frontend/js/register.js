@@ -59,7 +59,7 @@ if (form) {
             window.navigateTo("/dashboard");
         } catch (error) {
             console.error("Erro:", error);
-            alert("Falha ao cadastrar usuário. Tente novamente.");
+            alert("Falha ao cadastrar usuário." + error.message);
         }
     });
 }

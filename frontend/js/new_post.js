@@ -1,22 +1,59 @@
-document.addEventListener('DOMContentLoaded', () => {
-const {
-    ClassicEditor,
-    Essentials,
-    Bold,
-    Italic,
-    Font,
-    Paragraph
-} = CKEDITOR;
 
-ClassicEditor
-    .create(document.querySelector('#conteudo_new_post'), {
-        licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3OTM4MzY3OTksImp0aSI6IjQzNDkxNGY2LTY3MTMtNGZlOC1hNzkxLTc5ZTcyNzMyNWE0ZCIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiXSwiZmVhdHVyZXMiOlsiRFJVUCIsIkUyUCIsIkUyVyJdLCJyZW1vdmVGZWF0dXJlcyI6WyJQQiIsIlJGIiwiU0NIIiwiVENQIiwiVEwiLCJUQ1IiLCJJUiIsIlNVQSIsIkI2NEEiLCJMUCIsIkhFIiwiUkVEIiwiUEZPIiwiV0MiLCJGQVIiLCJCS00iLCJGUEgiLCJNUkUiXSwidmMiOiI4OGY3NjNmMiJ9.eLfM6v4VJxL2mzX0W3KAG8P2KP-eEb26fxkMnzWki-4aSz4LR4H5wjY4whIFD0U6Xn8YPvScTOBYVmJ7GoktGQ',
-        plugins: [Essentials, Bold, Italic, Font, Paragraph],
-        toolbar: [
-            'undo', 'redo', '|', 'bold', 'italic', '|',
-            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor'
-        ]
-    })
-    .then( /* ... */)
-    .catch( /* ... */);
+const btnCadastrar = document.getElementById('cadastrar-post');
+
+
+btnCadastrar.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('title').value.trim();
+    const category = document.getElementById('categoria').value.trim();
+    const content = document.getElementById('conteudo_new_post').value.trim();
+
+    if (!title || !category || !content) {
+        alert('Preencha todos os campos!');
+        return;
+    }
+
+    try {
+        const config = window.APP_CONFIG;
+
+        if (!config) {
+            alert('Erro ao carregar configuração do sistema.');
+            return;
+        }
+
+        const host = config.database.host;
+        const port = config.database.port;
+
+        const apiUrl = `http://${host}:${port}/posts`;
+        console.log('Tentando acessar:', apiUrl);
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('user_auth')}`,
+            },
+            body: JSON.stringify({
+                titulo: title,
+                categoria_id: category,
+                conteudo: content
+            }),
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(errText || 'Erro ao cadastrar post.');
+        }
+
+        const data = await response.json();
+        console.log("Post:", data);
+
+        window.navigateTo('/forum');
+    } catch (error) {
+        console.error('Erro ao cadastrar post:', error);
+        alert(error.message);
+    }
+
+
 });

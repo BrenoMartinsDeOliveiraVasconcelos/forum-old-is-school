@@ -1,6 +1,6 @@
 const post = {
-      titulo: "Guia de Montagem de PCs Antigos",
-      conteudo: `
+  titulo: "Guia de Montagem de PCs Antigos",
+  conteudo: `
 ## 💡 Introdução
 
 Montar um PC antigo pode ser um passatempo nostálgico e educativo.  
@@ -64,10 +64,13 @@ Além de reaprender conceitos básicos de hardware, você revive uma época em q
 
 Se quiser compartilhar suas montagens, poste fotos, modelos de peças e resultados de benchmark — é assim que a comunidade cresce!
 `
-    };
+};
 
-    document.getElementById('postsContainer').innerHTML = `
+document.getElementById('postsContainer').innerHTML = `
       <h1>${post.titulo}</h1>
       <h6>Postado em 10/11/2025 por Lucas Ferreira</h6> <br>
       ${marked.parse(post.conteudo)}
     `;
+
+document.getElementById('post-votes-value').innerHTML = ' 0';
+document.getElementById('post-comments-value').innerHTML = ' 0';

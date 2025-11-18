@@ -40,14 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.head.appendChild(pageCss);
 
     // ====== JS BASE (carrega em todas as páginas) ======
-    const oldBaseScript = document.getElementById("base-js");
-    if (!oldBaseScript) {
-      const baseScript = document.createElement("script");
-      baseScript.id = "base-js";
-      baseScript.src = "/frontend/js/base.js";
-      baseScript.type = "module";
-      document.body.appendChild(baseScript);
-    }
     const oldBaseConfig = document.getElementById("config-js");
     if (!oldBaseConfig) {
       const baseConfig = document.createElement("script");
@@ -55,6 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
       baseConfig.src = "/frontend/js/config.js";
       baseConfig.type = "module";
       document.body.appendChild(baseConfig);
+    }
+    const oldBaseScript = document.getElementById("base-js");
+    if (!oldBaseScript) {
+      const baseScript = document.createElement("script");
+      baseScript.id = "base-js";
+      baseScript.src = "/frontend/js/base.js";
+      baseScript.type = "module";
+      document.body.appendChild(baseScript);
     }
     const oldLoginScript = document.getElementById("login-js");
     if (!oldLoginScript) {

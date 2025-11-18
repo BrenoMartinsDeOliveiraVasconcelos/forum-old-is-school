@@ -1,5 +1,4 @@
 const form = document.getElementById('sidebarLoginForm');
-console.log(form);
 
 if (form) {
     form.addEventListener('submit', async (e) => {
@@ -23,7 +22,10 @@ if (form) {
 
             const host = config.database.host;
             const port = config.database.port;
-            console.log(host, port);
+
+            const body = new URLSearchParams();
+            body.append('username', username);
+            body.append('password', password);
 
             const apiUrl = `http://${host}:${port}/token`;
             console.log('Tentando acessar:', apiUrl);
@@ -33,10 +35,7 @@ if (form) {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: JSON.stringify({
-                    apelido: username,
-                    senha: password
-                }),
+                body: body,
             });
 
             if (!response.ok) {
@@ -45,13 +44,34 @@ if (form) {
             }
 
             const data = await response.json();
-            console.log(data);
 
-            sessionStorage.setItem('user_auth', data.token);
+            sessionStorage.setItem('user_auth', data.access_token);
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+
+            const apiUrlUser = `http://${host}:${port}/usuarios`;
+            const user = await fetch(apiUrlUser, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const userData = await user.json();
+            console.log(userData);
+            
             window.navigateTo('/dashboard');
         } catch (error) {
             console.error(error);
             alert(error.message);
         }
+    });
+}
+
+const logout = document.getElementById('logout');
+if (logout) {
+    logout.addEventListener('click', () => {
+        sessionStorage.removeItem('user_auth');
+        window.navigateTo('/dashboard');
     });
 }
