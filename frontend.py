@@ -6,7 +6,7 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     """
     Custom request handler to block access to specific files and directories.
     """
-    forbidden_endings = [".py", ".md", ".sql", ".json", ".txt", ".sh"]
+    forbidden_endings = [".py", ".md", ".sql", ".json", ".sh"]
     forbidden_starts = ["/."]
     def do_GET(self):
         starts_forbidden = any(self.path.startswith(s) for s in self.forbidden_starts)

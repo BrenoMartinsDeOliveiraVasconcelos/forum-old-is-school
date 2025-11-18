@@ -92,10 +92,8 @@ OBS: É recomendado usar em um ambiente virtual.
 
 ```bash
 pip install -r requirements.txt
-uvicorn app:app --port 9090 --host 127.0.0.1
+python3 app.py
 ```
-
-Sendo ```--port``` a porta que a api vai responder e ```--host``` o ip.
 
 # 3 - Usando a API
 
