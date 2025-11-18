@@ -179,22 +179,22 @@ async def create_category(category: classes.Category, current_user_apelido: str 
 # Métodos GET que pegam todos de cada categoria
 
 @app.get("/usuarios")
-async def get_users(paging: classes.Paging):
+async def get_user(page: int, size: int):
     #j = utils.select_all(database, ["id", "apelido", "avatar_filename", "deletado"], "usuarios", paging.page, paging.page_size)
     
     j = utils.select_all(
         database,
         ["id", "apelido", "avatar_filename", "assinatura", "admin", "deletado"],
         "usuarios",
-        paging.page,
-        paging.page_size
+        page,
+        size
     )
     return helpers.api_response(j)
 
 
 @app.get("/posts")
-async def get_posts(paging: classes.PagingPosts):
-    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"], "posts", paging.page, paging.page_size, where=True, condition_column="categoria_id", condition_value=str(paging.categoria_id))
+async def get_posts(page: int, size: int, categoria_id: int):
+    posts = utils.select_all(database, ["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"], "posts", page, size, where=True, condition_column="categoria_id", condition_value=str(categoria_id))
     posts = helpers.insert_user_data(database, posts["posts"])
 
 
@@ -202,8 +202,8 @@ async def get_posts(paging: classes.PagingPosts):
 
     
 @app.get("/mensagens")
-async def get_messages(paging: classes.Paging):
-    mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens", paging.page, paging.page_size)
+async def get_messages(page: int, size: int):
+    mensagens = utils.select_all(database, ["id", "autor_id", "mensagem", "timestamp"], "mensagens", page, size)
     
     mensagens = helpers.insert_user_data(database, mensagens["mensagens"])
 
@@ -212,8 +212,8 @@ async def get_messages(paging: classes.Paging):
 
 
 @app.get("/comentarios")
-async def get_comments(paging: classes.Paging):
-    comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios", paging.page, paging.page_size)
+async def get_comments(page: int, size: int):
+    comentarios = utils.select_all(database, ["id", "autor_id", "post_id", "conteudo", "timestamp"], "comentarios", page, size)
 
     for comentario in comentarios["comentarios"]:
         comentario["post_titulo"] = utils.select_where(database, comentario["post_id"], "id", "posts", ["titulo"])["posts"][0]["titulo"]
@@ -222,8 +222,8 @@ async def get_comments(paging: classes.Paging):
 
 
 @app.get("/categorias")
-async def get_categories(paging: classes.Paging):
-    categorias = utils.select_all(database, ["id", "titulo", "desc", "autor_id", "timestamp"], "categorias", paging.page, paging.page_size)
+async def get_categories(page: int, size: int):
+    categorias = utils.select_all(database, ["id", "titulo", "desc", "autor_id", "timestamp"], "categorias", page, size)
     
     categorias = helpers.insert_user_data(database, categorias["categorias"])
     
@@ -260,7 +260,7 @@ async def get_post(post_id: int):
 
 # Tudo relacionado ao usuário
 @app.get("/usuarios/{user_id}")
-async def get_user_content(user_id: int, paging: classes.Paging):
+async def get_user_content(user_id: int, page: int, size: int):
     str_user_id = str(user_id)
 
     users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "avatar_filename", "assinatura", "admin"], True)
@@ -271,30 +271,8 @@ async def get_user_content(user_id: int, paging: classes.Paging):
             connection=database,
             columns=["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"],
             table="posts",
-            page=paging.page,
-            page_size=paging.page_size,
-            where=True,
-            condition_column="autor_id",
-            condition_value=str_user_id
-        )
-
-        user["mensagens"] = utils.select_all(
-            connection=database,
-            columns=["id", "autor_id", "mensagem", "timestamp"],
-            table="mensagens",
-            page=paging.page,
-            page_size=paging.page_size,
-            where=True,
-            condition_column="autor_id",
-            condition_value=str_user_id
-        )
-
-        user["comentarios"] = utils.select_all(
-            connection=database,
-            columns=["id", "autor_id", "post_id", "conteudo", "timestamp"],
-            table="comentarios",
-            page=paging.page,
-            page_size=paging.page_size,
+            page=page,
+            page_size=size,
             where=True,
             condition_column="autor_id",
             condition_value=str_user_id
@@ -327,14 +305,14 @@ async def get_msg(mensagem_id: int):
 # Conseguir do usuário cada coisa
 
 @app.get("/usuarios/{user_id}/posts")
-async def get_user_posts(user_id: int, paging: classes.Paging):
+async def get_user_posts(user_id: int, page: int, size: int):
     #j = utils.select_where(database, str(user_id), "autor_id", "posts", ["id", "autor_id", "titulo", "conteudo", "timestamp"])
     j = utils.select_all(
         connection=database,
         columns=["id", "autor_id", "titulo", "conteudo", "midia", "mural", "categoria_id", "timestamp"],
         table="posts",
-        page=paging.page,
-        page_size=paging.page_size,
+        page=page,
+        page_size=size,
         where=True,
         condition_column="autor_id",
         condition_value=str(user_id)
@@ -344,13 +322,13 @@ async def get_user_posts(user_id: int, paging: classes.Paging):
 
 
 @app.get("/usuarios/{user_id}/comentarios")
-async def get_user_comments(user_id: int, paging: classes.Paging):
+async def get_user_comments(user_id: int, page: int, size: int):
     j = utils.select_all(
         connection=database,
         columns=["id", "autor_id", "post_id", "conteudo", "timestamp"],
         table="comentarios",
-        page=paging.page,
-        page_size=paging.page_size,
+        page=page,
+        page_size=size,
         where=True,
         condition_column="autor_id",
         condition_value=str(user_id)
@@ -359,13 +337,13 @@ async def get_user_comments(user_id: int, paging: classes.Paging):
 
 
 @app.get("/usuarios/{user_id}/mensagens")
-async def get_user_messages(user_id: int, paging: classes.Paging):
+async def get_user_messages(user_id: int, page: int, size: int):
     j = utils.select_all(
         connection=database,
         columns=["id", "autor_id", "mensagem", "timestamp"],
         table="mensagens",
-        page=paging.page,
-        page_size=paging.page_size,
+        page=page,
+        page_size=size,
         where=True,
         condition_column="autor_id",
         condition_value=str(user_id)
@@ -479,8 +457,8 @@ async def delete_category(catogry_id: int, current_user_apelido: str = fastapi.D
 
 
 @app.get("/pesquisar/posts/{search_term}")
-async def search_posts(search_term: str, pagging: classes.Paging):
-    result = utils.search(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts", search_term, "titulo", pagging.page, pagging.page_size)
+async def search_posts(search_term: str, page: int, size: int):
+    result = utils.search(database, ["id", "autor_id", "titulo", "conteudo", "timestamp"], "posts", search_term, "titulo", page, size)
     
     for post in result["posts"]:
         post["comentarios"] = []
@@ -496,16 +474,17 @@ async def search_posts(search_term: str, pagging: classes.Paging):
 
 
 @app.get("/pesquisar/usuarios/{search_term}")
-async def search_users(search_term: str, pagging: classes.Paging):
-    result = utils.search(database, ["id", "apelido", "avatar_filename"], "usuarios", search_term, "apelido", pagging.page, pagging.page_size)
+async def search_users(search_term: str, page: int, size: int):
+    result = utils.search(database, ["id", "apelido", "avatar_filename"], "usuarios", search_term, "apelido", page, size)
 
     return helpers.api_response(result)
 
 # Conseguir artquivos de mídia
 
 @app.get("/arquivos/avatares/{filename}")
-async def get_media(filename: str):
+async def get_media_fn(filename: str):
     return FileResponse(f"{avatar_folder}/{filename}")
+
 
 @app.get("/arquivos/mural/{filename}")
 async def get_media(filename: str):
@@ -541,24 +520,24 @@ async def like_post(like: classes.ResourceInfo, current_user_apelido: str = fast
     return helpers.api_response(j)
 
 
-@app.get("/curtidas")
-async def get_likes(like: classes.ResourcePaging):
-    if like.resource_type not in [key for key in supported_like_resources.keys()]:
+@app.get("/curtidas/{resource_type}")
+async def get_likes(page: int, size: int, resource_type: str, resource_id: int):
+    if resource_type not in [key for key in supported_like_resources.keys()]:
         raise fastapi.HTTPException(status_code=400, detail="Recurso nao suportado")
 
     j = utils.select_all(
         connection=database,
         columns=["autor_id"],
-        table=f"curtidas_{like.resource_type}",
-        page=like.page,
-        page_size=like.page_size,
+        table=f"curtidas_{resource_type}",
+        page=page,
+        page_size=size,
         where=True,
-        condition_column=supported_like_resources[like.resource_type],
-        condition_value=str(like.resource_id)
+        condition_column=supported_like_resources[resource_type],
+        condition_value=str(resource_id)
     )
 
     num_likes = 0
-    for liker in j[f"curtidas_{like.resource_type}"]:
+    for liker in j[f"curtidas_{resource_type}"]:
         liker["autor"] = helpers.get_user_data(database, liker["autor_id"])
         num_likes += 1
 

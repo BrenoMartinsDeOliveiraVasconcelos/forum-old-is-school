@@ -136,32 +136,32 @@ Esse endpoint é relacionado manipulação e obteção de dados de usuários.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | ```page: int```, ```page_size: int``` | Lista de usuários | - |
+| GET | ```page: int```, ```size: int``` | - | Lista de usuários | - |
 | POST | - | ```apelido```, ```senha``` | ```user_id``` | - |
 
 #### 3.3.1.1 /usuarios/user_id
 
-| Requests suportados | Argumentos na URL | Body | Retorno | OBS |
+| Requests suportados | Argumentos na URL | Body |Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | ```page: int```, ```page_size: int``` | Lista com o usuário e todos os seus posts, comentários e mensagens | - |
+| GET | ```user_id```, ```page: int```, ```size: int``` | - | Lista com o usuário e todos os seus posts, comentários e mensagens | - |
 
 ##### 3.3.1.1.1 /usuarios/user_id/posts
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | ```page: int```, ```page_size: int``` | | Lista de posts feito pelo usuário | - |
+| GET | ```user_id``` ,  ```page: int```, ```size: int``` |  -| Lista de posts feito pelo usuário | - |
 
 ##### 3.3.1.1.2 /usuarios/user_id/comentarios
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | ```page: int```, ```page_size: int``` | | Lista de comentários feito pelo usuário | - |
+| GET | ```user_id```, ```page: int```, ```size: int``` | - | Lista de comentários feito pelo usuário | - |
 
 ##### 3.3.1.1.3 /usuarios/user_id/mensagens
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```user_id``` | ```page: int```, ```page_size: int``` | | Lista de mensagens enviadas pelo usuário | - |
+| GET | ```user_id```, ```page: int```, ```size: int``` | - | Lista de mensagens enviadas pelo usuário | - |
 
 #### 3.3.1.2 /usuarios/user_id/editar
 
@@ -201,7 +201,7 @@ Endpoint relacionado a posts. Possui uma quanitdade menor de chamdas em relaçã
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | ```page: int```, ```page_size: int```, ```categoria_id: int``` | Lista de posts | - |
+| GET | ```page: int```, ```size: int```, ```categoria_id: int``` | - |Lista de posts | - |
 | POST | - | ```titulo```, ```conteudo```, ```categoria_id: int``` | ```status: ok```| - |
 
 
@@ -233,7 +233,7 @@ Endpoint de comentários.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | ```page: int```, ```page_size: int``` | Lista de comentários | - |
+| GET | ```page: int```, ```size: int``` | - | Lista de comentários | - |
 | POST | - | ```post_id```, ```conteudo``` | ```status: ok```| - |
 
 
@@ -254,7 +254,7 @@ Endpoint de comentários.
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | - | ```page: int```, ```page_size: int``` | Lista de mensagens | - |
+| GET | ```page: int```, ```size: int``` | - |Lista de mensagens | - |
 | POST | - | ```mensagem``` | ```status: ok```| - |
 
 
@@ -283,13 +283,13 @@ Esse endpoint não é aceito na raiz
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```search_term``` | ```page: int```, ```page_size: int``` | Lista de posts correspondente a pesquisa | - |
+| GET | ```search_term```, ```page: int```, ```size: int``` | -| Lista de posts correspondente a pesquisa | - |
 
 #### 3.3.6.2 /pesquisar/usuarios/search_term
 
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
-| GET | ```search_term``` | ```page: int```, ```page_size: int``` | Lista de usuarios correspondente a pesquisa | - |
+| GET | ```search_term```, ```page: int```, ```size: int``` | - |Lista de usuarios correspondente a pesquisa | - |
 
 
 ### 3.3.7 /arquivos
@@ -311,11 +311,11 @@ Esse endpoint é responsável por pegar arquivos de mídia do servidor. Só rece
 ### 3.3.8 /curtidas
 
 Endpoint responsável pelo sistema de likes.
-
+ #### 3.3.8.1 /curtidas/resource_type/
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | POST | - | ```resource_type: 'posts' ou 'comentarios'```, ```resource_id: int``` | ```status: ok``` |
-| GET | - | ```resource_type: 'posts' ou 'comentarios'```, ```resource_id: int```, ```page: int```, ```page_size: int``` | Uma lista de curtidas | - |
+| GET | ```resource_type: 'posts' ou 'comentarios'```, ```resource_id: int```, ```page: int```, ```size: int``` | - |Uma lista de curtidas | - |
 
 ### 3.3.9 /categorias
 
@@ -324,7 +324,7 @@ Endpoint de categorias de tópicos
 | Requests suportados | Argumentos na URL | Body | Retorno | OBS |
 | --- | --- | --- | --- | --- |
 | POST | - | ```titulo```, ```desc``` | ```category_id: int``` | - |
-| GET | - | ```page: int```, ```page_size: int``` | Uma lista de categorias | - |
+| GET | ```page: int```, ```size: int``` | - |Uma lista de categorias | - |
 
 #### 3.3.9.1 /categorias/id_categoria/deletar
 
