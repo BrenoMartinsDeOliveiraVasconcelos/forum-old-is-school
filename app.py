@@ -10,7 +10,14 @@ import random
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Request
 from datetime import timedelta
+import datetime
+import uvicorn
+print("Starting server")
+
+if not os.path.exists("log.txt"):
+    open("log.txt", "w+").close()
 
 
 postgree_user = os.getenv("P_USER")
@@ -64,6 +71,17 @@ os.makedirs(media_folder, exist_ok=True)
 
 supported_image_types = ["jpg", "jpeg", "png", "gif"]
 
+@app.middleware("http")
+async def pre_process(request: Request, call_next):
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    response = await call_next(request)
+    
+    log_text = f"[{request.client.host}:{request.client.port}] [{now}] [{response.status_code}] {request.method} {request.url}"
+
+    print(log_text)
+    open("log.txt", "a").write(log_text + "\n")
+
+    return response
 
 @app.get("/")
 async def root():
@@ -581,3 +599,9 @@ async def set_mod_permissions(user_info: classes.UserInfo, current_user_apelido:
 
     j = {"status": "OK"}
     return helpers.api_response(j)
+
+
+if __name__ == "__main__":
+    print("Ready!")
+    uvicorn.run(app, host=app_conifg["ip"], port=app_conifg["port"], log_config=None)
+    print("Server closed")
