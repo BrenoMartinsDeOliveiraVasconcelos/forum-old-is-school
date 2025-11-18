@@ -1,26 +1,30 @@
 <div class="col-12">
     <div class="register-container">
         <h2 class="text-center mb-4">Nova Postagem</h2>
-        <form id="registerForm">
-            <div class="mb-3">
-                <label for="title" class="form-label">Título</label>
-                <input type="text" class="form-control" id="title" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Conteúdo</label>
-                <textarea id="conteudo_new_post" name="description" class="form-control" rows="10" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="image" class="form-label">Adicionar imagem</label>
-                <input type="password" class="form-control" id="image" required>
-            </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Título</label>
+            <input type="text" class="form-control" id="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria</label>
+            <select name="categoria" class="form-select" id="categoria">
+                <option value=""></option>
+                <option value="1">Hardware</option>
+                <option value="2">Software</option>
+                <option value="3">Jogos</option>
+                <option value="4">Detonados</option>
+                <option value="5">Tutorial</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="conteudo_new_post" class="form-label">Conteúdo</label>
+            <textarea id="conteudo_new_post" name="conteudo" class="form-control" rows="10" required></textarea>
+        </div>
 
-            <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-        </form>
+        <button type="button" class="btn btn-primary w-100" id="cadastrar-post">Cadastrar</button>
 
         <div class="mt-3 text-center">
             <a href="#/forum" id="backToLogin">Voltar</a>
         </div>
     </div>
 </div>
-
