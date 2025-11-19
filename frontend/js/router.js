@@ -20,14 +20,38 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!mainCol) return;
 
     const res = await fetch(`/frontend/templates/${view}.html`);
+    const html = await res.text();
+
     if (!res.ok) {
       mainCol.innerHTML = `<h2>Página não encontrada</h2>`;
       return;
     }
 
-    const html = await res.text();
     mainCol.innerHTML = html;
-    document.dispatchEvent(new CustomEvent("viewLoaded", { detail: { view } }));
+    document.querySelectorAll("script[data-view-script]").forEach(s => s.remove());
+    window.forumInitialized = false;
+
+
+    // ====== CARREGA JS ESPECÍFICO DA PÁGINA ======
+    const oldPageScript = document.getElementById("page-specific-js");
+    if (oldPageScript) oldPageScript.remove();
+    const pageScript = document.createElement("script");
+    pageScript.id = "page-specific-js";
+    pageScript.src = `/frontend/js/${view}.js?v=` + Date.now();
+    pageScript.type = "module";
+    pageScript.setAttribute("data-view-script", "");
+    document.body.appendChild(pageScript);
+    pageScript.onload = () => {
+      console.log(`Script do view carregado → ${view}.js`);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (typeof window.onViewLoaded === "function") {
+            window.onViewLoaded(view);
+          }
+        });
+      });
+    };
 
     // ======= CARREGA CSS ESPECÍFICO DA PÁGINA =======
     const oldPageCss = document.getElementById("page-specific-css");
@@ -40,6 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.head.appendChild(pageCss);
 
     // ====== JS BASE (carrega em todas as páginas) ======
+    const oldFunctionScripts = document.getElementById("function-js");
+    if (!oldFunctionScripts) {
+      const functionScripts = document.createElement("script");
+      functionScripts.id = "function-js";
+      functionScripts.src = "/frontend/js/funcoes.js";
+      functionScripts.type = "module";
+      document.body.appendChild(functionScripts);
+    }
     const oldBaseConfig = document.getElementById("config-js");
     if (!oldBaseConfig) {
       const baseConfig = document.createElement("script");
@@ -72,17 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
       CKEditorScript.type = "module";
       document.body.appendChild(CKEditorScript);
     }
-
-
-    // ====== CARREGA JS ESPECÍFICO DA PÁGINA ======
-    const oldPageScript = document.getElementById("page-specific-js");
-    if (oldPageScript) oldPageScript.remove();
-    const pageScript = document.createElement("script");
-    pageScript.id = "page-specific-js";
-    pageScript.src = `/frontend/js/${view}.js`;
-    pageScript.type = "module";
-    pageScript.onerror = () => pageScript.remove();
-    document.body.appendChild(pageScript);
   }
 
   // ====== DEFINE A PÁGINA INICIAL ======
@@ -93,9 +114,27 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (hash === "#/register") loadView("register");
     else if (hash === "#/forum") loadView("forum");
     else if (hash === "#/novo_post") loadView("new_post");
-    else if (hash === "#/post/1234") loadView("post");
+    else if (hash.startsWith("#/posts/")) loadView("post");
     else app.innerHTML = "<h2>Página não encontrada</h2>";
   }
+
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("a.btnHeader");
+    if (!link) return;
+
+    const href = link.getAttribute("href") || "";
+
+    if (href.startsWith("#")) {
+      if (href === window.location.hash) {
+        e.preventDefault();
+
+        console.log("Clique no mesmo hash detectado:", href, "- Forçando router()");
+
+        router();
+      }
+      return;
+    }
+  });
 
   // ====== AJUSTA A URL PARA QUE RECARREGUE A PAGINA ATUAL ======
   function navigateTo(path) {
