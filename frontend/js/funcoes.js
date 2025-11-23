@@ -92,3 +92,37 @@ export async function buscarPost(id) {
         alert(error.message);
     }
 }
+
+export async function buscarAllUsers() {
+
+    try {
+        const config = window.APP_CONFIG;
+
+        if (!config) {
+            alert('Erro ao carregar configuração do sistema.');
+        }
+
+        const host = config.database.host;
+        const port = config.database.port;
+
+       const paramsObj = {
+            page: 1,
+            size: 100,
+        };
+
+        const apiUrlUser = `http://${host}:${port}/usuarios?page=${paramsObj.page}&size=${paramsObj.size}`;
+        const user = await fetch(apiUrlUser, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const userData = await user.json();
+        
+        return userData
+    } catch (error) {
+        console.error('Erro ao carregar autor:', error);
+        alert(error.message);
+    }
+}

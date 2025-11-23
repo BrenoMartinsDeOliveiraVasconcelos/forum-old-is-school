@@ -114,7 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (hash === "#/register") loadView("register");
     else if (hash === "#/forum") loadView("forum");
     else if (hash === "#/novo_post") loadView("new_post");
-    else if (hash.startsWith("#/posts/")) loadView("post");
+    else if (hash.startsWith("#/posts/")) loadView("post"); 
+    else if (hash === "#/membros") loadView("members"); 
     else app.innerHTML = "<h2>Página não encontrada</h2>";
   }
 

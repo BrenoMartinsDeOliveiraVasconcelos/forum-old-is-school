@@ -39,6 +39,13 @@ function verificarAutenticacao() {
             });
         }
     }
+
+    const divEditar = document.getElementById('editar_usuario');
+    if (divEditar) {
+        divEditar.innerHTML = `
+            <a href="#/usuarios/${sessionStorage.getItem('user').id}?page=1&size=1">Editar</a>
+        `;
+    }
 }
 
 verificarAutenticacao();
