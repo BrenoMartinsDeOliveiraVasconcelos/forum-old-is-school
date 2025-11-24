@@ -281,7 +281,7 @@ async def get_post(post_id: int):
 async def get_user_content(user_id: int, page: int, size: int):
     str_user_id = str(user_id)
 
-    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "avatar_filename", "assinatura", "admin"], True)
+    users = utils.select_where(database, str_user_id, "id", "usuarios", ["id", "apelido", "avatar_filename", "biografia", "assinatura", "admin"], True)
     
 
     for user in users["usuarios"]:
