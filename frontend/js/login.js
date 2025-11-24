@@ -1,3 +1,5 @@
+import { customAlert } from "./funcoes.js";
+
 const form = document.getElementById('sidebarLoginForm');
 
 if (form) {
@@ -8,7 +10,7 @@ if (form) {
         const password = document.getElementById('loginPassword').value.trim();
 
         if (!username || !password) {
-            alert('Preencha todos os campos!');
+            customAlert('Preencha todos os campos!');
             return;
         }
 
@@ -16,7 +18,7 @@ if (form) {
             const config = window.APP_CONFIG;
 
             if (!config) {
-                alert('Erro ao carregar configuração do sistema.');
+                customAlert('Erro ao carregar configuração do sistema.');
                 return;
             }
 
@@ -48,8 +50,12 @@ if (form) {
             sessionStorage.setItem('user_auth', data.access_token);
             document.getElementById('loginUsername').value = '';
             document.getElementById('loginPassword').value = '';
+            const paramsObj = {
+                page: 1,
+                size: 100,
+            };
 
-            const apiUrlUser = `http://${host}:${port}/usuarios`;
+            const apiUrlUser = `http://${host}:${port}/usuarios?page=${paramsObj.page}&size=${paramsObj.size}`;
             const user = await fetch(apiUrlUser, {
                 method: 'GET',
                 headers: {
@@ -59,7 +65,26 @@ if (form) {
 
             const userData = await user.json();
             console.log(userData);
-            
+
+            // Encontra o usuário cujo apelido é igual ao username digitado
+            const usuarioEncontrado = userData.usuarios.find(u => u.apelido === username);
+
+            if (usuarioEncontrado) {
+                // Salva no sessionStorage como STRING
+                sessionStorage.setItem('user', JSON.stringify(usuarioEncontrado));
+
+                const divEditar = document.getElementById('editar_usuario');
+                if (divEditar) {
+                    divEditar.innerHTML = `
+                        <a href="#/editar_usuario/${usuarioEncontrado.id}?page=1&size=1">Editar</a><br>
+                        <a href="#/visualizar/${user.id}">Perfil</a>
+                    `;
+                }
+
+            } else {
+                console.warn("Nenhum usuário encontrado com esse apelido.");
+            }
+
             window.navigateTo('/dashboard');
         } catch (error) {
             console.error(error);

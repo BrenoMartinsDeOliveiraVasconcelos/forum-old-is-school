@@ -1,0 +1,58 @@
+<!-- CONTEÚDO PRINCIPAL -->
+<section class="main-content">
+    <h1>Editar Perfil</h1>
+    <div class="row">
+        <div class="col-4 text-center">
+            <img src="/frontend/assets/img/user.svg" class="user-avatar-edit-view" id="avatar_edit">
+            <p><a href="#" class="btn text-white" data-bs-toggle="modal" data-bs-target="#meuModal">
+                Alterar Avatar
+            </a></p>
+        </div>
+        <div class="col-8">
+            <input type="hidden" id="user_id">
+            <div class="mb-3">
+                <label for="name" class="form-label">Apelido</label>
+                <h3 id="name_edit"></h3>
+            </div>
+            <div class="mb-3">
+                <label for="biografia" class="form-label">Biografia</label>
+                <textarea class="form-control" id="biografia_edit" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="assinatura" class="form-label">Assinatura</label>
+                <textarea class="form-control" id="assinatura_edit" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row text-end">
+        <button type="button" class="btn btn-primary w-100 mb-5" id="save_edit">Salvar</button>
+    </div>
+    <div class="row text-end">
+        <a href="" class="btn btn-danger w-50">Excluir Conta</a>
+    </div>
+
+    <!-- Modal Alterar imagem -->
+    <div class="modal fade" id="meuModal" tabindex="-1" aria-labelledby="meuModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <input type="hidden" id="avatar_user_id">
+                <div class="modal-header">
+                    <h5 class="modal-title text-black" id="meuModalLabel">Alterar Avatar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body ">
+                    <input type="file" class="form-control" id="avatar" placeholder="Envie seu avatar" accept="image/*">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="salvar_avatar" data-bs-dismiss="modal">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+</section>

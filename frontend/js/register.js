@@ -1,3 +1,4 @@
+import { customAlert } from "./funcoes.js";
 const form = document.getElementById("registerForm");
 
 if (form) {
@@ -9,12 +10,12 @@ if (form) {
         const confirmPassword = document.getElementById("confirmPassword").value;
 
         if (password !== confirmPassword) {
-            alert("As senhas não conferem!");
+            customAlert("As senhas não conferem!");
             return;
         }
 
         if (!username || !password || !confirmPassword) {
-            alert("Preencha todos os campos!");
+            customAlert("Preencha todos os campos!");
             return;
         }
         
@@ -22,7 +23,7 @@ if (form) {
             const config = window.APP_CONFIG;
 
             if (!config) {
-                alert("Erro ao carregar configuração do sistema.");
+                customAlert("Erro ao carregar configuração do sistema.");
                 return;
             }
 
@@ -54,12 +55,12 @@ if (form) {
             console.log("Usuário cadastrado:", data);
 
             console.log({ username, password });
-            alert("Usuário cadastrado com sucesso!");
+            customAlert("Usuário cadastrado com sucesso!");
 
             window.navigateTo("/dashboard");
         } catch (error) {
             console.error("Erro:", error);
-            alert("Falha ao cadastrar usuário." + error.message);
+            customAlert("Falha ao cadastrar usuário." + error.message);
         }
     });
 }

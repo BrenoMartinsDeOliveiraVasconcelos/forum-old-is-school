@@ -4,7 +4,7 @@ export async function buscarUsuario(id) {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
         }
 
         const host = config.database.host;
@@ -17,7 +17,6 @@ export async function buscarUsuario(id) {
         };
 
         const apiUrl = `http://${host}:${port}/usuarios/${paramsObj.user_id}?page=${paramsObj.page}&size=${paramsObj.size}`;
-        console.log("Tentando acessar:", apiUrl);
 
         const response = await fetch(apiUrl, {
             method: 'GET',
@@ -32,11 +31,11 @@ export async function buscarUsuario(id) {
         }
 
         const autor = await response.json();
-        
+
         return autor
     } catch (error) {
         console.error('Erro ao carregar autor:', error);
-        alert(error.message);
+        customAlert(error.message);
     }
 }
 
@@ -59,7 +58,7 @@ export async function buscarPost(id) {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
         }
 
         const host = config.database.host;
@@ -85,10 +84,117 @@ export async function buscarPost(id) {
         }
 
         const post = await response.json();
-        
+
         return post
     } catch (error) {
         console.error('Erro ao carregar post:', error);
-        alert(error.message);
+        customAlert(error.message);
     }
+}
+
+export async function buscarAllUsers() {
+
+    try {
+        const config = window.APP_CONFIG;
+
+        if (!config) {
+            customAlert('Erro ao carregar configuração do sistema.');
+        }
+
+        const host = config.database.host;
+        const port = config.database.port;
+
+        const paramsObj = {
+            page: 1,
+            size: 100,
+        };
+
+        const apiUrlUser = `http://${host}:${port}/usuarios?page=${paramsObj.page}&size=${paramsObj.size}`;
+        const user = await fetch(apiUrlUser, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const userData = await user.json();
+
+        return userData
+    } catch (error) {
+        console.error('Erro ao carregar autor:', error);
+        customAlert(error.message);
+    }
+}
+
+export async function buscarAllPostsByUser(id) {
+
+    try {
+        const config = window.APP_CONFIG;
+
+        if (!config) {
+            customAlert('Erro ao carregar configuração do sistema.');
+        }
+
+        const host = config.database.host;
+        const port = config.database.port;
+
+        const paramsObj = {
+            user_id: id,
+            page: 1,
+            size: 100,
+        };
+
+        const apiUrlUser = `http://${host}:${port}/usuarios/${paramsObj.user_id}/posts?page=${paramsObj.page}&size=${paramsObj.size}`;
+        const user = await fetch(apiUrlUser, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const userData = await user.json();
+
+        return userData
+    } catch (error) {
+        console.error('Erro ao carregar autor:', error);
+        customAlert(error.message);
+    }
+}
+
+export function buscarAvatar(file) {
+
+    const config = window.APP_CONFIG;
+
+    if (!config) {
+        customAlert('Erro ao carregar configuração do sistema.');
+        return;
+    }
+
+    const host = config.database.host;
+    const port = config.database.port;
+
+    if (!file) {
+        return `/frontend/assets/img/user.svg`;
+    }
+
+    return `http://${host}:${port}/arquivos/avatares/${file}`;
+}
+
+export function customAlert(titulo, mensagem) {
+    const overlay = document.createElement("div");
+    overlay.className = "custom-alert-overlay";
+
+    overlay.innerHTML = `
+        <div class="custom-alert-box">
+            <h2>${titulo}</h2>
+            <p>${mensagem}</p>
+            <button class="custom-alert-btn">OK</button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelector("button").onclick = () => {
+        overlay.remove();
+    };
 }

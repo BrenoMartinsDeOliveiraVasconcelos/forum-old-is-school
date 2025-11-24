@@ -1,4 +1,4 @@
-import { buscarPost, buscarUsuario, formatarData } from "./funcoes.js";
+import { buscarPost, buscarUsuario, formatarData, customAlert } from "./funcoes.js";
 
 const hash = window.location.hash;
 const postId = hash.split("/")[2];
