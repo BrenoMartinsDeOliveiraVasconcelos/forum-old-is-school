@@ -1,4 +1,4 @@
-
+import { customAlert } from "./funcoes.js";
 const btnCadastrar = document.getElementById('cadastrar-post');
 
 
@@ -10,7 +10,7 @@ btnCadastrar.addEventListener('click', async (e) => {
     const content = document.getElementById('conteudo_new_post').value.trim();
 
     if (!title || !category || !content) {
-        alert('Preencha todos os campos!');
+        customAlert('Preencha todos os campos!');
         return;
     }
 
@@ -18,7 +18,7 @@ btnCadastrar.addEventListener('click', async (e) => {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
             return;
         }
 
@@ -52,7 +52,7 @@ btnCadastrar.addEventListener('click', async (e) => {
         window.navigateTo('/forum');
     } catch (error) {
         console.error('Erro ao cadastrar post:', error);
-        alert(error.message);
+        customAlert(error.message);
     }
 
 

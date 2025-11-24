@@ -1,4 +1,4 @@
-import { buscarUsuario, buscarAvatar } from "./funcoes.js";
+import { buscarUsuario, buscarAvatar, customAlert } from "./funcoes.js";
 
 const hash = window.location.hash;
 const parts = hash.split("/");
@@ -27,7 +27,7 @@ btnSalvar.addEventListener('click', async () => {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
             return;
         }
 
@@ -76,7 +76,6 @@ btnSalvar.addEventListener('click', async () => {
             }
         }
 
-        alert("Alterações salvas com sucesso!");
         window.location.href = `#/visualizar/${user_id}`;
     }
 });
@@ -88,13 +87,13 @@ btnSalvarAvatar.addEventListener('click', async () => {
     const avatarFile = document.getElementById('avatar').files[0];
 
     if (!avatarFile) {
-        alert("Selecione uma imagem antes de salvar.");
+        customAlert("Selecione uma imagem antes de salvar.");
         return;
     }
 
     const config = window.APP_CONFIG;
     if (!config) {
-        alert('Erro ao carregar configuração do sistema.');
+        customAlert('Erro ao carregar configuração do sistema.');
         return;
     }
 
@@ -125,8 +124,7 @@ btnSalvarAvatar.addEventListener('click', async () => {
     const meuModal = new bootstrap.Modal(document.getElementById('meuModal'));
     meuModal.hide();
 
-    alert("Avatar atualizado com sucesso!");
-
+    customcustomAlert("Sucesso", "Avatar alterado com sucesso.");
     window.location.href = `#/visualizar/${user_id}`;
 });
 

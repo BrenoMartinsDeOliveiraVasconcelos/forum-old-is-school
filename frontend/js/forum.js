@@ -1,6 +1,6 @@
 window.forumInitialized = false;
 
-import { buscarUsuario, formatarData } from "/frontend/js/funcoes.js";
+import { buscarUsuario, formatarData, customAlert } from "/frontend/js/funcoes.js";
 
 window.onViewLoaded = function (view) {
     if (view !== "forum") return;
@@ -44,7 +44,7 @@ async function carregarEExibirPosts(postsSection) {
     try {
         const config = window.APP_CONFIG;
         if (!config) {
-            alert("Erro ao carregar configuração do sistema.");
+            customAlert("Erro ao carregar configuração do sistema.");
             return;
         }
         const host = config.database.host;

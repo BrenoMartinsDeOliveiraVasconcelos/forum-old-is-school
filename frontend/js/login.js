@@ -1,3 +1,5 @@
+import { customAlert } from "./funcoes.js";
+
 const form = document.getElementById('sidebarLoginForm');
 
 if (form) {
@@ -8,7 +10,7 @@ if (form) {
         const password = document.getElementById('loginPassword').value.trim();
 
         if (!username || !password) {
-            alert('Preencha todos os campos!');
+            customAlert('Preencha todos os campos!');
             return;
         }
 
@@ -16,7 +18,7 @@ if (form) {
             const config = window.APP_CONFIG;
 
             if (!config) {
-                alert('Erro ao carregar configuração do sistema.');
+                customAlert('Erro ao carregar configuração do sistema.');
                 return;
             }
 

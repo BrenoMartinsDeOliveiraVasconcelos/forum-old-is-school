@@ -4,7 +4,7 @@ export async function buscarUsuario(id) {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
         }
 
         const host = config.database.host;
@@ -35,7 +35,7 @@ export async function buscarUsuario(id) {
         return autor
     } catch (error) {
         console.error('Erro ao carregar autor:', error);
-        alert(error.message);
+        customAlert(error.message);
     }
 }
 
@@ -58,7 +58,7 @@ export async function buscarPost(id) {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
         }
 
         const host = config.database.host;
@@ -88,7 +88,7 @@ export async function buscarPost(id) {
         return post
     } catch (error) {
         console.error('Erro ao carregar post:', error);
-        alert(error.message);
+        customAlert(error.message);
     }
 }
 
@@ -98,7 +98,7 @@ export async function buscarAllUsers() {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
         }
 
         const host = config.database.host;
@@ -122,7 +122,7 @@ export async function buscarAllUsers() {
         return userData
     } catch (error) {
         console.error('Erro ao carregar autor:', error);
-        alert(error.message);
+        customAlert(error.message);
     }
 }
 
@@ -132,7 +132,7 @@ export async function buscarAllPostsByUser(id) {
         const config = window.APP_CONFIG;
 
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
         }
 
         const host = config.database.host;
@@ -157,7 +157,7 @@ export async function buscarAllPostsByUser(id) {
         return userData
     } catch (error) {
         console.error('Erro ao carregar autor:', error);
-        alert(error.message);
+        customAlert(error.message);
     }
 }
 
@@ -166,12 +166,35 @@ export function buscarAvatar(file) {
     const config = window.APP_CONFIG;
 
     if (!config) {
-        alert('Erro ao carregar configuração do sistema.');
+        customAlert('Erro ao carregar configuração do sistema.');
         return;
     }
 
     const host = config.database.host;
     const port = config.database.port;
 
+    if (!file) {
+        return `/frontend/assets/img/user.svg`;
+    }
+
     return `http://${host}:${port}/arquivos/avatares/${file}`;
+}
+
+export function customAlert(titulo, mensagem) {
+    const overlay = document.createElement("div");
+    overlay.className = "custom-alert-overlay";
+
+    overlay.innerHTML = `
+        <div class="custom-alert-box">
+            <h2>${titulo}</h2>
+            <p>${mensagem}</p>
+            <button class="custom-alert-btn">OK</button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelector("button").onclick = () => {
+        overlay.remove();
+    };
 }

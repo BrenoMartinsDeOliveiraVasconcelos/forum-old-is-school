@@ -1,3 +1,4 @@
+import { buscarAvatar, customAlert } from "./funcoes.js";
 const sectionMembers = document.getElementById('members-section');
 
 if (sectionMembers) {
@@ -10,7 +11,7 @@ async function carregarEExibirMembros(sectionMembers) {
     try {
         const config = window.APP_CONFIG;
         if (!config) {
-            alert('Erro ao carregar configuração do sistema.');
+            customAlert('Erro ao carregar configuração do sistema.');
             return;
         }
         const host = config.database.host;
@@ -40,20 +41,35 @@ async function carregarEExibirMembros(sectionMembers) {
         sectionMembers.innerHTML = "";
 
         users.usuarios.forEach(user => {
-            const member = document.createElement('div');
-            member.classList.add('member');
-            member.classList.add('post');
-            member.innerHTML = `
-                <div class="row">
-                <div class="member-avatar col-4">
-                    <img src="${user.avatar || '/frontend/assets/img/user.svg'}" class="user-avatar"> <span class= "mr-4">${user.apelido}</span> 
+    const member = document.createElement('div');
+    member.classList.add('member', 'post', 'p-3', 'mb-3');
+
+    member.innerHTML = `
+        <div class="card shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card-body d-flex align-items-center">
+                
+                <!-- Avatar -->
+                <div class="me-3">
+                    <img src="${buscarAvatar(user.avatar_filename)}" 
+                         class="rounded-circle border" 
+                         style="width: 80px; height: 80px; object-fit: cover;">
                 </div>
-                <div class="row">
-                 <a href="#/visualizar/${user.id}" class="text-end">Ver perfil</a>
+
+                <!-- Nome + link -->
+                <div class="flex-grow-1">
+                    <h5 class="mb-1">${user.apelido}</h5>
+                    <a href="#/visualizar/${user.id}" class="text-primary" style="font-size: 0.9rem;">
+                        Ver perfil →
+                    </a>
                 </div>
-            `;
-            sectionMembers.appendChild(member);
-        });
+
+            </div>
+        </div>
+    `;
+
+    sectionMembers.appendChild(member);
+});
+
     } catch (error) {
         console.error('Erro ao carregar membros:', error);
     }

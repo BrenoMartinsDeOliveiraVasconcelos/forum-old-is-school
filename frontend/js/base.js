@@ -1,4 +1,4 @@
-import { buscarUsuario, buscarAvatar } from "./funcoes.js";
+import { buscarUsuario, buscarAvatar} from "./funcoes.js";
 // ====== CHECA AUTENTICAÇÃO PARA ENVIAR MENSAGEM NO CHAT ======
 async function verificarAutenticacao() {
     const chatForm = document.getElementById("chatForm");
@@ -40,6 +40,12 @@ async function verificarAutenticacao() {
             });
         }
     }
+    const useName = document.getElementById("user-name");
+    if (useName && isAuthenticated) {
+        const userStr = sessionStorage.getItem('user');
+        const user = JSON.parse(userStr);
+        useName.textContent = user.apelido;
+    }
 
     const sideAvatarImage = document.getElementById("user-avatar");
     if (sideAvatarImage && isAuthenticated) {
@@ -72,3 +78,4 @@ if (registerLink) {
         window.navigateTo("/register");
     });
 }
+
