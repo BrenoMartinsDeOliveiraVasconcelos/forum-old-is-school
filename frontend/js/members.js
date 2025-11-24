@@ -49,7 +49,7 @@ async function carregarEExibirMembros(sectionMembers) {
                     <img src="${user.avatar || '/frontend/assets/img/user.svg'}" class="user-avatar"> <span class= "mr-4">${user.apelido}</span> 
                 </div>
                 <div class="row">
-                 <a href="/frontend/templates/usuario.html?id=${user.id}" class="text-end">Ver perfil</a>
+                 <a href="#/visualizar/${user.id}" class="text-end">Ver perfil</a>
                 </div>
             `;
             sectionMembers.appendChild(member);

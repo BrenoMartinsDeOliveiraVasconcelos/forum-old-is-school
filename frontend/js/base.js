@@ -41,9 +41,13 @@ function verificarAutenticacao() {
     }
 
     const divEditar = document.getElementById('editar_usuario');
-    if (divEditar) {
+    const userStr = sessionStorage.getItem('user');
+    const user = JSON.parse(userStr);
+    if (divEditar && user) {  
+          
         divEditar.innerHTML = `
-            <a href="#/usuarios/${sessionStorage.getItem('user').id}?page=1&size=1">Editar</a>
+            <a href="#/editar_usuario/${user.id}">Editar</a><br>
+            <a href="#/visualizar/${user.id}">Perfil</a>
         `;
     }
 }

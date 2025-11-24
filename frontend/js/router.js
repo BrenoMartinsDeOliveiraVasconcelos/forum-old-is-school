@@ -64,14 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.head.appendChild(pageCss);
 
     // ====== JS BASE (carrega em todas as páginas) ======
-    const oldFunctionScripts = document.getElementById("function-js");
-    if (!oldFunctionScripts) {
-      const functionScripts = document.createElement("script");
-      functionScripts.id = "function-js";
-      functionScripts.src = "/frontend/js/funcoes.js";
-      functionScripts.type = "module";
-      document.body.appendChild(functionScripts);
-    }
     const oldBaseConfig = document.getElementById("config-js");
     if (!oldBaseConfig) {
       const baseConfig = document.createElement("script");
@@ -79,6 +71,14 @@ document.addEventListener("DOMContentLoaded", () => {
       baseConfig.src = "/frontend/js/config.js";
       baseConfig.type = "module";
       document.body.appendChild(baseConfig);
+    }
+    const oldFunctionScripts = document.getElementById("function-js");
+    if (!oldFunctionScripts) {
+      const functionScripts = document.createElement("script");
+      functionScripts.id = "function-js";
+      functionScripts.src = "/frontend/js/funcoes.js";
+      functionScripts.type = "module";
+      document.body.appendChild(functionScripts);
     }
     const oldBaseScript = document.getElementById("base-js");
     if (!oldBaseScript) {
@@ -116,6 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (hash === "#/novo_post") loadView("new_post");
     else if (hash.startsWith("#/posts/")) loadView("post"); 
     else if (hash === "#/membros") loadView("members"); 
+    else if (hash.startsWith("#/editar_usuario/")) loadView("edit_user"); 
+    else if (hash.startsWith("#/visualizar/")) loadView("view_user"); 
     else app.innerHTML = "<h2>Página não encontrada</h2>";
   }
 

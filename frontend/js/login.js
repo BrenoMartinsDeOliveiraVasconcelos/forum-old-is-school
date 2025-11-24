@@ -74,8 +74,9 @@ if (form) {
                 const divEditar = document.getElementById('editar_usuario');
                 if (divEditar) {
                     divEditar.innerHTML = `
-            <a href="#/usuarios/${usuarioEncontrado.id}?page=1&size=1">Editar</a>
-        `;
+                        <a href="#/editar_usuario/${usuarioEncontrado.id}?page=1&size=1">Editar</a><br>
+                        <a href="#/visualizar/${user.id}">Perfil</a>
+                    `;
                 }
 
             } else {
