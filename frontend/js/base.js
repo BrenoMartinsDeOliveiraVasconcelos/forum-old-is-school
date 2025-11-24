@@ -1,5 +1,6 @@
+import { buscarUsuario, buscarAvatar } from "./funcoes.js";
 // ====== CHECA AUTENTICAÇÃO PARA ENVIAR MENSAGEM NO CHAT ======
-function verificarAutenticacao() {
+async function verificarAutenticacao() {
     const chatForm = document.getElementById("chatForm");
     const isAuthenticated = !!sessionStorage.getItem("user_auth");
 
@@ -38,6 +39,14 @@ function verificarAutenticacao() {
                 window.navigateTo("/login");
             });
         }
+    }
+
+    const sideAvatarImage = document.getElementById("user-avatar");
+    if (sideAvatarImage && isAuthenticated) {
+        const userStr = sessionStorage.getItem('user');
+        const user = await buscarUsuario(JSON.parse(userStr).id);   
+        
+        sideAvatarImage.src = await buscarAvatar(user.usuarios[0].avatar_filename)
     }
 
     const divEditar = document.getElementById('editar_usuario');

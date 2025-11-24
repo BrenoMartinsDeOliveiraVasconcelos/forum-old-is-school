@@ -204,10 +204,11 @@ label {
 
 /* ====== AVATAR ====== */
 .user-avatar {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  border: 3px solid #6da3d6
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
 }
 
 .user-status {

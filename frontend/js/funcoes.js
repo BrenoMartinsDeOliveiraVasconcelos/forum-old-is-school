@@ -17,7 +17,6 @@ export async function buscarUsuario(id) {
         };
 
         const apiUrl = `http://${host}:${port}/usuarios/${paramsObj.user_id}?page=${paramsObj.page}&size=${paramsObj.size}`;
-        console.log("Tentando acessar:", apiUrl);
 
         const response = await fetch(apiUrl, {
             method: 'GET',
@@ -32,7 +31,7 @@ export async function buscarUsuario(id) {
         }
 
         const autor = await response.json();
-        
+
         return autor
     } catch (error) {
         console.error('Erro ao carregar autor:', error);
@@ -85,7 +84,7 @@ export async function buscarPost(id) {
         }
 
         const post = await response.json();
-        
+
         return post
     } catch (error) {
         console.error('Erro ao carregar post:', error);
@@ -105,7 +104,7 @@ export async function buscarAllUsers() {
         const host = config.database.host;
         const port = config.database.port;
 
-       const paramsObj = {
+        const paramsObj = {
             page: 1,
             size: 100,
         };
@@ -119,7 +118,7 @@ export async function buscarAllUsers() {
         })
 
         const userData = await user.json();
-        
+
         return userData
     } catch (error) {
         console.error('Erro ao carregar autor:', error);
@@ -139,7 +138,7 @@ export async function buscarAllPostsByUser(id) {
         const host = config.database.host;
         const port = config.database.port;
 
-       const paramsObj = {
+        const paramsObj = {
             user_id: id,
             page: 1,
             size: 100,
@@ -154,10 +153,25 @@ export async function buscarAllPostsByUser(id) {
         })
 
         const userData = await user.json();
-        
+
         return userData
     } catch (error) {
         console.error('Erro ao carregar autor:', error);
         alert(error.message);
     }
+}
+
+export function buscarAvatar(file) {
+
+    const config = window.APP_CONFIG;
+
+    if (!config) {
+        alert('Erro ao carregar configuração do sistema.');
+        return;
+    }
+
+    const host = config.database.host;
+    const port = config.database.port;
+
+    return `http://${host}:${port}/arquivos/avatares/${file}`;
 }
