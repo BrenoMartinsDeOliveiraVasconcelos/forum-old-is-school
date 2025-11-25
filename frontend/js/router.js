@@ -96,6 +96,14 @@ document.addEventListener("DOMContentLoaded", () => {
       loginScript.type = "module";
       document.body.appendChild(loginScript);
     }
+    const oldChatScript = document.getElementById("chat-js");
+    if (!oldChatScript) {
+      const chatScript = document.createElement("script");
+      chatScript.id = "chat-js";
+      chatScript.src = "/frontend/js/chat.js";
+      chatScript.type = "module";
+      document.body.appendChild(chatScript);
+    }
     const oldCKEditorScript = document.getElementById("ckeditor-js");
     if (!oldCKEditorScript) {
       const CKEditorScript = document.createElement("script");

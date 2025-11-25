@@ -85,6 +85,7 @@ if (form) {
                 console.warn("Nenhum usuário encontrado com esse apelido.");
             }
 
+            window.location.reload();
             window.navigateTo('/dashboard');
         } catch (error) {
             console.error(error);
@@ -97,6 +98,8 @@ const logout = document.getElementById('logout');
 if (logout) {
     logout.addEventListener('click', () => {
         sessionStorage.removeItem('user_auth');
+        sessionStorage.removeItem('user');
+        window.location.reload();
         window.navigateTo('/dashboard');
     });
 }
