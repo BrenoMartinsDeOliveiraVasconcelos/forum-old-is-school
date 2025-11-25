@@ -74,80 +74,138 @@ label {
   color: #333;
 }
 
-/* ====== CHAT SIDEBAR ====== */
+/* ====== CHAT CONTAINER ====== */
 .forum-chat {
   display: flex;
   flex-direction: column;
-  height: 500px;
+
+  /* ALTURA FIXA */
+  height: 500px !important; 
+  max-height: 500px !important;
+  min-height: 500px !important;
+
   border: 2px solid #6da3d6;
-  border-radius: 6px;
-  background-color: #f0f0f0;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #e4eef7, #ffffff);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+
+  overflow: hidden; /* impede o layout de estourar */
 }
 
-/* ====== CABEÇALHO DO CHAT ====== */
+/* ====== CABEÇALHO ====== */
 .chat-header {
-  background-color: #6da3d6;
+  background: linear-gradient(135deg, #6da3d6, #4d80b5);
   color: #fff;
-  padding: 8px;
+  padding: 10px;
   text-align: center;
   font-weight: bold;
   border-bottom: 2px solid #3b5c8e;
+  letter-spacing: 0.8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
-/* ====== AREA DE MENSAGENS ====== */
+/* ====== ÁREA DE MENSAGENS ====== */
 .chat-messages {
   flex-grow: 1;
-  padding: 10px;
+  padding: 12px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  background-color: #fff;
-  border-radius: 4px;
+  gap: 10px;
+  background-color: #ffffff;
 }
 
+/* Scroll estilizado */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: #6da3d6;
+  border-radius: 6px;
+}
+.chat-messages::-webkit-scrollbar-track {
+  background: #e3e3e3;
+}
+
+/* ====== BOLHAS DE MENSAGENS ====== */
 .message {
-  padding: 6px 10px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
   max-width: 80%;
   word-wrap: break-word;
-}
-
-.message.self {
-  align-self: flex-start;
-  text-align: left;
+  font-size: 14px;
+  line-height: 1.3;
+  position: relative;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
 .message.other {
+  background: #d8ebff;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+}
+
+.message.self {
+  background: #e8e8e8;
   align-self: flex-end;
-  text-align: right;
+  border-bottom-right-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
 }
 
-/* ====== INPUT DE DIGITAÇÃO ====== */
+/* Animação de aparecimento */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== ÁREA DO INPUT ====== */
 .chat-input {
+  padding: 8px;
+  background: #f7f9fc;
+  border-top: 2px solid #6da3d6;
   display: flex;
-  padding: 5px 0;
+  align-items: center;
 }
 
+/* Caixa de texto */
 .chat-input input {
-  border-radius: 20px;
+  border-radius: 25px;
+  border: 1px solid #6da3d6;
+  padding: 8px 14px;
+  transition: 0.2s;
 }
 
+.chat-input input:focus {
+  border-color: #3b5c8e;
+  box-shadow: 0 0 4px rgba(61, 93, 142, 0.4);
+}
+
+/* Botão enviar */
 .chat-input button {
-  border-radius: 20px;
+  border-radius: 25px;
+  padding: 6px 14px;
+  background: #6da3d6;
+  border: none;
+  transition: 0.2s;
+}
+
+.chat-input button:hover {
+  background: #598bb8;
+  transform: scale(1.05);
 }
 
 /* ====== SIDEBAR DIREITA ====== */
 .forum-sidebar {
   width: 100%;
-  background-color: #f0f0f0;
+  background: #ffffff;
   border: 3px solid #6da3d6;
-  border-radius: 8px;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25);
-  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  padding: 14px;
   box-sizing: border-box;
 }
+
 
 /* ====== CABEÇALHO DA SIDEBAR ====== */
 .sidebar-header {
