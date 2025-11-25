@@ -20,6 +20,7 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 
                 self.wfile.write(content)
+                return
 
         return super().do_GET()
     
