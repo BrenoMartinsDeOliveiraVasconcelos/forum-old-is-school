@@ -12,8 +12,14 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         starts_forbidden = any(self.path.startswith(s) for s in self.forbidden_starts)
         ends_forbidden = any(self.path.endswith(e) for e in self.forbidden_endings)
         if starts_forbidden or ends_forbidden:
-            self.send_error(403, "Forbidden")
-            return
+                content = open("error.html", "rb").read()
+
+                self.send_response(200) 
+                self.send_header("Content-type", "text/html")
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                
+                self.wfile.write(content)
 
         return super().do_GET()
     
