@@ -1,6 +1,7 @@
 import http.server
 import socketserver
 from sys import argv
+import os
 
 class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     """
@@ -9,20 +10,32 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     forbidden_endings = [".py", ".md", ".sql", ".json", ".sh"]
     forbidden_starts = ["/."]
     def do_GET(self):
+        path_normalized = self.path[1:].removesuffix("/")
+        print(path_normalized)
         starts_forbidden = any(self.path.startswith(s) for s in self.forbidden_starts)
         ends_forbidden = any(self.path.endswith(e) for e in self.forbidden_endings)
+        normal_behaviour = False
+        content = open("index.html", "rb").read()
+        stdcode = 200
+
         if starts_forbidden or ends_forbidden:
                 content = open("error.html", "rb").read()
+        elif path_normalized not in os.listdir("."):
+            stcode = 404
+            content = open("error404.html", "rb").read()
+        else:
+            normal_behaviour = True
 
-                self.send_response(200) 
-                self.send_header("Content-type", "text/html")
-                self.send_header("Content-Length", str(len(content)))
-                self.end_headers()
-                
-                self.wfile.write(content)
-                return
-
-        return super().do_GET()
+        if not normal_behaviour:
+            self.send_response(stcode) 
+            self.send_header("Content-type", "text/html")
+            self.send_header("Content-Length", str(len(content)))
+            self.end_headers()
+            
+            self.wfile.write(content)
+            return
+        else:
+            return super().do_GET()
     
 
     def log_message(self, format, *args):
