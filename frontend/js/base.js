@@ -5,7 +5,6 @@ async function verificarAutenticacao() {
     const isAuthenticated = !!sessionStorage.getItem("user_auth");
 
     if (chatForm) {
-        console.log(isAuthenticated);
         const avisoExistente = chatForm.previousElementSibling?.classList.contains("aviso-login");
 
         if (!isAuthenticated) {
