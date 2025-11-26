@@ -89,7 +89,7 @@ if (form) {
             window.navigateTo('/dashboard');
         } catch (error) {
             console.error(error);
-            alert(error.message);
+            customAlert("Dados incorretos.", error.message);
         }
     });
 }

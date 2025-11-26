@@ -47,12 +47,11 @@ btnCadastrar.addEventListener('click', async (e) => {
         }
 
         const data = await response.json();
-        console.log("Post:", data);
 
         window.navigateTo('/forum');
     } catch (error) {
         console.error('Erro ao cadastrar post:', error);
-        customAlert(error.message);
+        customAlert("Erro ao cadastrar post.", error.message);
     }
 
 

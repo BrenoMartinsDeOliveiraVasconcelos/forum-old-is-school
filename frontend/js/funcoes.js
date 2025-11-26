@@ -184,10 +184,37 @@ export function customAlert(titulo, mensagem) {
     const overlay = document.createElement("div");
     overlay.className = "custom-alert-overlay";
 
+    const errorMessages = {
+        "Item ja cadastrado": "Já existe cadastro no sistema.",
+        "Incorrect username or password": "Nome de usuário ou senha incorretos.",
+        "Usuário já existe": "Já existe um usuário cadastrado com estes dados.",
+        "Token inválido": "Sua sessão expirou, faça login novamente.",
+        "Not authenticated": "Você precisa estar autenticado para realizar esta ação.",
+        "database error": "Houve um problema ao salvar no servidor. Tente novamente mais tarde."
+    };
+    let mensagemClara = mensagem;
+
+    try {
+        const parsed = JSON.parse(mensagem);        
+
+        if (parsed.detail) {
+            let encontrada = Object.keys(errorMessages)
+                .find(key => parsed.detail.includes(key));            
+
+            if (encontrada) {
+                mensagemClara = errorMessages[encontrada];
+            } else {
+                mensagemClara = parsed.detail;
+            }
+        }
+    } catch (error) {
+        console.error(error);
+    }
+
     overlay.innerHTML = `
         <div class="custom-alert-box">
             <h2>${titulo}</h2>
-            <p>${mensagem}</p>
+            <p>${mensagemClara}</p>
             <button class="custom-alert-btn">OK</button>
         </div>
     `;

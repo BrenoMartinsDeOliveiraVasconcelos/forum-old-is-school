@@ -7,7 +7,6 @@ const usuarioLogadoStr = sessionStorage.getItem("user");
 const usuarioLogado = JSON.parse(usuarioLogadoStr);
 
 let ultimoId = 0;
-// 🔄 Carregar mensagens
 async function carregarMensagens() {
     try {
         const config = window.APP_CONFIG;
@@ -30,8 +29,6 @@ async function carregarMensagens() {
         }
 
         const mensagens = await res.json();
-        console.log(mensagens);
-
         renderizarChatSemPiscar(mensagens);
     } catch (err) {
         console.error("Erro:", err);
@@ -101,8 +98,6 @@ chatForm.addEventListener("submit", async (e) => {
     }
 });
 
-// 🔄 Atualiza o chat automaticamente a cada 2s
-setInterval(carregarMensagens, 2000);
+setInterval(carregarMensagens, 1000);
 
-// Carrega no início
 carregarMensagens();

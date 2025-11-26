@@ -124,7 +124,7 @@ btnSalvarAvatar.addEventListener('click', async () => {
     const meuModal = new bootstrap.Modal(document.getElementById('meuModal'));
     meuModal.hide();
 
-    customcustomAlert("Sucesso", "Avatar alterado com sucesso.");
+    customAlert("Sucesso", "Avatar alterado com sucesso.");
     window.location.href = `#/visualizar/${user_id}`;
 });
 
