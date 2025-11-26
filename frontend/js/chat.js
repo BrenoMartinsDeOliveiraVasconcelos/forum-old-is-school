@@ -19,7 +19,7 @@ async function carregarMensagens() {
         const host = config.database.host;
         const port = config.database.port;
 
-        const paramsObj = { page: 1, size: 10 };
+        const paramsObj = { page: 1, size: 100000 };
 
         const res = await fetch(`http://${host}:${port}/mensagens?page=${paramsObj.page}&size=${paramsObj.size}`);
 
