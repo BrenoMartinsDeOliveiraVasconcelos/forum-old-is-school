@@ -16,7 +16,7 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         ends_forbidden = any(self.path.endswith(e) for e in self.forbidden_endings)
         normal_behaviour = False
         content = open("index.html", "rb").read()
-        stdcode = 200
+        stcode = 200
 
         if starts_forbidden or ends_forbidden:
                 content = open("error.html", "rb").read()
