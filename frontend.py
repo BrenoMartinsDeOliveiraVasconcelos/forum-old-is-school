@@ -10,7 +10,7 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     forbidden_endings = [".py", ".md", ".sql", ".json", ".sh"]
     forbidden_starts = ["/."]
     def do_GET(self):
-        path_normalized = self.path[1:].removesuffix("/")
+        path_normalized = self.path[1:].removesuffix("/").split("?")[0]
 
         starts_forbidden = any(self.path.startswith(s) for s in self.forbidden_starts)
         ends_forbidden = any(self.path.endswith(e) for e in self.forbidden_endings)
