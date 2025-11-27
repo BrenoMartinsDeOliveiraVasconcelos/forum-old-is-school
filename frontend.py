@@ -11,7 +11,7 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     forbidden_starts = ["/."]
     def do_GET(self):
         path_normalized = self.path[1:].removesuffix("/")
-        print(path_normalized)
+
         starts_forbidden = any(self.path.startswith(s) for s in self.forbidden_starts)
         ends_forbidden = any(self.path.endswith(e) for e in self.forbidden_endings)
         normal_behaviour = False
@@ -20,7 +20,7 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         if starts_forbidden or ends_forbidden:
                 content = open("error.html", "rb").read()
-        elif path_normalized not in os.listdir("."):
+        elif not os.path.exists(f"./{path_normalized}"):
             stcode = 404
             content = open("error404.html", "rb").read()
         else:
